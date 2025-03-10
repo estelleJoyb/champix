@@ -5,26 +5,26 @@ import 'book.dart';
 final libraryInstance =
 Library()
   ..addBook(
-    title: 'Left Hand of Darkness',
-    authorName: 'Ursula K. Le Guin',
+    title: 'Girolles',
+    authorName: 'France',
     isPopular: true,
     isNew: true,
   )
   ..addBook(
-    title: 'Too Like the Lightning',
-    authorName: 'Ada Palmer',
+    title: 'Trompettes de la mort',
+    authorName: 'France',
     isPopular: false,
     isNew: true,
   )
   ..addBook(
-    title: 'Kindred',
-    authorName: 'Octavia E. Butler',
+    title: 'Cèpes',
+    authorName: 'France',
     isPopular: true,
     isNew: false,
   )
   ..addBook(
-    title: 'The Lathe of Heaven',
-    authorName: 'Ursula K. Le Guin',
+    title: 'Shitake',
+    authorName: 'Japon',
     isPopular: false,
     isNew: false,
   );

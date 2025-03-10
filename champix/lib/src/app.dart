@@ -1,3 +1,4 @@
+import 'package:champix/src/screens/sign_up.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -24,7 +25,17 @@ class Bookstore extends StatefulWidget {
 }
 
 class _BookstoreState extends State<Bookstore> {
-  final BookstoreAuth auth = BookstoreAuth();
+  final ChampixAuth auth = ChampixAuth();
+
+  String? getRedirectPath(Uri stateUri, bool signedIn) {
+    final currentPath = stateUri.toString();
+    final excludedPaths = ['/sign-in', '/sign-up'];
+
+    if (!excludedPaths.contains(currentPath) && !signedIn) {
+      return '/sign-in';
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,18 +44,15 @@ class _BookstoreState extends State<Bookstore> {
         if (child == null) {
           throw ('No child in .router constructor builder');
         }
-        return BookstoreAuthScope(notifier: auth, child: child);
+        return ChampixAuthScope(notifier: auth, child: child);
       },
       routerConfig: GoRouter(
         refreshListenable: auth,
         debugLogDiagnostics: true,
         initialLocation: '/books/popular',
         redirect: (context, state) {
-          final signedIn = BookstoreAuth.of(context).signedIn;
-          if (state.uri.toString() != '/sign-in' && !signedIn) {
-            return '/sign-in';
-          }
-          return null;
+          final signedIn = ChampixAuth.of(context).signedIn;
+          return getRedirectPath(state.uri, signedIn);
         },
         routes: [
           ShellRoute(
@@ -66,8 +74,7 @@ class _BookstoreState extends State<Bookstore> {
                   return FadeTransitionPage<dynamic>(
                     key: state.pageKey,
                     // Use a builder to get the correct BuildContext
-                    // TODO (johnpryan): remove when https://github.com/flutter/flutter/issues/108177 lands
-                    child: Builder(
+                   child: Builder(
                       builder: (context) {
                         return BooksScreen(
                           onTap: (idx) {
@@ -96,7 +103,6 @@ class _BookstoreState extends State<Bookstore> {
                     pageBuilder: (context, state) {
                       return FadeTransitionPage<dynamic>(
                         // Use a builder to get the correct BuildContext
-                        // TODO (johnpryan): remove when https://github.com/flutter/flutter/issues/108177 lands
                         key: state.pageKey,
                         child: Builder(
                           builder: (context) {
@@ -132,7 +138,6 @@ class _BookstoreState extends State<Bookstore> {
                       return FadeTransitionPage<dynamic>(
                         key: state.pageKey,
                         // Use a builder to get the correct BuildContext
-                        // TODO (johnpryan): remove when https://github.com/flutter/flutter/issues/108177 lands
                         child: Builder(
                           builder: (context) {
                             return BookList(
@@ -167,8 +172,7 @@ class _BookstoreState extends State<Bookstore> {
                       return FadeTransitionPage<dynamic>(
                         key: state.pageKey,
                         // Use a builder to get the correct BuildContext
-                        // TODO (johnpryan): remove when https://github.com/flutter/flutter/issues/108177 lands
-                        child: Builder(
+                         child: Builder(
                           builder: (context) {
                             return BookList(
                               books: libraryInstance.allBooks,
@@ -226,8 +230,7 @@ class _BookstoreState extends State<Bookstore> {
                             int.parse(state.pathParameters['authorId']!),
                       );
                       // Use a builder to get the correct BuildContext
-                      // TODO (johnpryan): remove when https://github.com/flutter/flutter/issues/108177 lands
-                      return Builder(
+                     return Builder(
                         builder: (context) {
                           return AuthorDetailsScreen(
                             author: author,
@@ -258,13 +261,32 @@ class _BookstoreState extends State<Bookstore> {
             path: '/sign-in',
             builder: (context, state) {
               // Use a builder to get the correct BuildContext
-              // TODO (johnpryan): remove when https://github.com/flutter/flutter/issues/108177 lands
               return Builder(
                 builder: (context) {
                   return SignInScreen(
                     onSignIn: (value) async {
                       final router = GoRouter.of(context);
-                      await BookstoreAuth.of(
+                      await ChampixAuth.of(
+                        context,
+                      ).signIn(value.username, value.password);
+                      router.go('/books/popular');
+                    },
+                  );
+                },
+              );
+            },
+          ),
+
+          GoRoute(
+            path: '/sign-up',
+            builder: (context, state) {
+              // Use a builder to get the correct BuildContext
+              return Builder(
+                builder: (context) {
+                  return SignUpScreen(
+                    onSignUp: (value) async {
+                      final router = GoRouter.of(context);
+                      await ChampixAuth.of(
                         context,
                       ).signIn(value.username, value.password);
                       router.go('/books/popular');

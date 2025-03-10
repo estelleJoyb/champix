@@ -2,7 +2,7 @@
 import 'package:flutter/widgets.dart';
 
 /// A mock authentication service
-class BookstoreAuth extends ChangeNotifier {
+class ChampixAuth extends ChangeNotifier {
   bool _signedIn = false;
 
   bool get signedIn => _signedIn;
@@ -14,9 +14,18 @@ class BookstoreAuth extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> signIn(String username, String password) async {
+  Future<bool> signUp(String username, String password, String email) async {
+    //todo create account
     await Future<void>.delayed(const Duration(milliseconds: 200));
+    // Sign in. Allow any password.
+    _signedIn = true;
+    notifyListeners();
+    return _signedIn;
+  }
 
+  Future<bool> signIn(String username, String password) async {
+    //todo sign in
+    await Future<void>.delayed(const Duration(milliseconds: 200));
     // Sign in. Allow any password.
     _signedIn = true;
     notifyListeners();
@@ -25,19 +34,19 @@ class BookstoreAuth extends ChangeNotifier {
 
   @override
   bool operator ==(Object other) =>
-      other is BookstoreAuth && other._signedIn == _signedIn;
+      other is ChampixAuth && other._signedIn == _signedIn;
 
   @override
   int get hashCode => _signedIn.hashCode;
 
-  static BookstoreAuth of(BuildContext context) =>
+  static ChampixAuth of(BuildContext context) =>
       context
-          .dependOnInheritedWidgetOfExactType<BookstoreAuthScope>()!
+          .dependOnInheritedWidgetOfExactType<ChampixAuthScope>()!
           .notifier!;
 }
 
-class BookstoreAuthScope extends InheritedNotifier<BookstoreAuth> {
-  const BookstoreAuthScope({
+class ChampixAuthScope extends InheritedNotifier<ChampixAuth> {
+  const ChampixAuthScope({
     required super.notifier,
     required super.child,
     super.key,

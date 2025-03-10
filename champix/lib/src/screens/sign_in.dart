@@ -1,3 +1,4 @@
+import 'package:url_launcher/link.dart';
 import 'package:flutter/material.dart';
 
 class Credentials {
@@ -56,6 +57,14 @@ class _SignInScreenState extends State<SignInScreen> {
                     );
                   },
                   child: const Text('Sign in'),
+                ),
+              ),
+              Link(
+                uri: Uri.parse('/sign-up'),
+                builder:
+                    (context, followLink) => TextButton(
+                  onPressed: followLink,
+                  child: const Text('Don\'t have an account? Sign up',style: TextStyle(color: Colors.black, decoration: TextDecoration.underline),),
                 ),
               ),
             ],
