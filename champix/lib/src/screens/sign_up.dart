@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/link.dart';
+import 'package:champix/src/constants/constants.dart';
 class Credentials {
   final String username;
   final String password;
@@ -70,7 +71,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 builder:
                     (context, followLink) => TextButton(
                   onPressed: followLink,
-                  child: const Text('Already have an account? Sign in', style: TextStyle(color: Colors.black, decoration: TextDecoration.underline),),
+                  child: const Text('Already have an account? Sign in', style: TextStyle(color: Constants.paleGreen, decoration: TextDecoration.underline),),
                 ),
               ),
             ],

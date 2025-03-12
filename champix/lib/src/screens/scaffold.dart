@@ -1,6 +1,5 @@
 import 'package:adaptive_navigation/adaptive_navigation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 
 class ChampignonstoreScaffold extends StatelessWidget {
@@ -22,9 +21,9 @@ class ChampignonstoreScaffold extends StatelessWidget {
         selectedIndex: selectedIndex,
         body: child,
         onDestinationSelected: (idx) {
-          if (idx == 0) goRouter.go('/books/popular');
-          if (idx == 1) goRouter.go('/mushroom/detect');
-          if (idx == 3) goRouter.go('/settings');
+          if (idx == 0) goRouter.go('/champignon');
+          if (idx == 1) goRouter.go('/detect');
+          if (idx == 2) goRouter.go('/settings');
         },
         destinations:  const [
           AdaptiveScaffoldDestination(title: 'Champignons', icon: Icons.person),

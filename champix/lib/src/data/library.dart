@@ -9,18 +9,21 @@ Library()
     isEdible: true,
     country: 'France',
     description: 'Les girolles sont des champignons comestibles.',
+    imageurl: "https://www.jardiner-malin.fr/wp-content/uploads/2022/04/Girolle.jpg",
   )
   ..addChampignon(
     name: 'Trompettes de la mort',
     isEdible: true,
     country: 'France',
     description: 'Les trompettes de la mort sont des champignons comestibles.',
+    imageurl: "https://www.jardiner-malin.fr/wp-content/uploads/2022/05/reconnaitre-trompette-de-la-mort-Craterellus-cornucopioides-640x740.jpg",
   )
   ..addChampignon(
     name: 'Cèpes',
     isEdible: true,
     country: 'France',
     description: 'Les cèpes sont des champignons comestibles.',
+    imageurl: "https://www.jardiner-malin.fr/wp-content/uploads/2022/04/cepe-dete-Boletus-aestivalis.jpg",
   )
   ..addChampignon(
     name: 'Amanite tue mouches',
@@ -43,8 +46,9 @@ class Library {
     required bool isEdible,
     required String country,
     required String description,
+    String? imageurl,
   }) {
-    var champignon = Champignon(allChampignon.length, name, isEdible, country, description);
+    var champignon = Champignon(allChampignon.length, name, isEdible, country, description, imageurl);
     allChampignon.add(champignon);
   }
 
