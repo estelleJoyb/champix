@@ -15,6 +15,7 @@ class TakePictureScreen extends StatefulWidget {
 class TakePictureScreenState extends State<TakePictureScreen> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+  bool takingPicture = false;
   XFile? image;
 
   @override
@@ -35,10 +36,14 @@ class TakePictureScreenState extends State<TakePictureScreen> {
   }
 
   void takePicture() async {
+    setState(() {
+      takingPicture = true;
+    });
     try {
       await _initializeControllerFuture;
       final XFile newImage = await _controller.takePicture();
       setState(() {
+        takingPicture = false;
         image = newImage;
       });
     } catch (e) {
@@ -64,7 +69,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
               Padding(
                 padding: const EdgeInsets.only(top : 8.0),
                 child: FloatingActionButton(
-                  onPressed: takePicture,
+                  onPressed: takingPicture ? null : takePicture,
                   child: const Icon(Icons.camera_alt),
                 ),
               ),
