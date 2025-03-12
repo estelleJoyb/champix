@@ -1,63 +1,67 @@
 
-import 'author.dart';
-import 'book.dart';
+import 'dart:core';
+import 'package:champix/src/data/champignon.dart';
 
 final libraryInstance =
 Library()
-  ..addBook(
-    title: 'Girolles',
-    authorName: 'France',
-    isPopular: true,
-    isNew: true,
+  ..addChampignon(
+    name: 'Girolles',
+    isEdible: true,
+    country: 'France',
+    description: 'Les girolles sont des champignons comestibles.',
   )
-  ..addBook(
-    title: 'Trompettes de la mort',
-    authorName: 'France',
-    isPopular: false,
-    isNew: true,
+  ..addChampignon(
+    name: 'Trompettes de la mort',
+    isEdible: true,
+    country: 'France',
+    description: 'Les trompettes de la mort sont des champignons comestibles.',
   )
-  ..addBook(
-    title: 'Cèpes',
-    authorName: 'France',
-    isPopular: true,
-    isNew: false,
+  ..addChampignon(
+    name: 'Cèpes',
+    isEdible: true,
+    country: 'France',
+    description: 'Les cèpes sont des champignons comestibles.',
   )
-  ..addBook(
-    title: 'Shitake',
-    authorName: 'Japon',
-    isPopular: false,
-    isNew: false,
+  ..addChampignon(
+    name: 'Amanite tue mouches',
+    isEdible: false,
+    country: 'France',
+    description: 'Les Amanite tue mouches sont des champignons non comestibles.',
+  )
+  ..addChampignon(
+    name: 'Shitake',
+    isEdible: true,
+    country: 'Japon',
+    description: 'Les shitake sont des champignons comestibles.',
   );
 
 class Library {
-  final List<Book> allBooks = [];
-  final List<Author> allAuthors = [];
+  final List<Champignon> allChampignon = [];
 
-  void addBook({
-    required String title,
-    required String authorName,
-    required bool isPopular,
-    required bool isNew,
+  void addChampignon({
+    required String name,
+    required bool isEdible,
+    required String country,
+    required String description,
   }) {
-    var author = allAuthors.firstWhere(
-          (author) => author.name == authorName,
-      orElse: () {
-        final value = Author(allAuthors.length, authorName);
-        allAuthors.add(value);
-        return value;
-      },
+    var champignon = Champignon(allChampignon.length, name, isEdible, country, description);
+    allChampignon.add(champignon);
+  }
+
+  Champignon getChampignon(String id) {
+    final champignonId = int.tryParse(id);
+
+    if (champignonId == null) {
+      throw FormatException("Invalid Champignon ID: $id");
+    }
+
+    return allChampignon.firstWhere(
+          (champignon) => champignon.id == champignonId,
+      orElse: () => throw Exception("Champignon not found"),
     );
-    var book = Book(allBooks.length, title, isPopular, isNew, author);
-
-    author.books.add(book);
-    allBooks.add(book);
   }
 
-  Book getBook(String id) {
-    return allBooks[int.parse(id)];
-  }
-
-  List<Book> get popularBooks => [...allBooks.where((book) => book.isPopular)];
-
-  List<Book> get newBooks => [...allBooks.where((book) => book.isNew)];
+  List<Champignon> get allChampignons => [...allChampignon];
+  List<Champignon> get edibleChampignons => [...allChampignon.where((champignon) => champignon.isEdible)];
+  List<Champignon> get nonEdibleChampignons => [...allChampignon.where((champignon) => !champignon.isEdible)];
 }

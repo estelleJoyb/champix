@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/material.dart';
 
 import '../data/author.dart';
@@ -15,4 +16,4 @@ class AuthorsScreen extends StatelessWidget {
     appBar: AppBar(title: Text(title)),
     body: AuthorList(authors: libraryInstance.allAuthors, onTap: onTap),
   );
-}
+}*/

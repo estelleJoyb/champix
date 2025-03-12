@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data.dart';
-import '../widgets/book_list.dart';
+import '../widgets/champignon_list.dart';
 
 class AuthorDetailsScreen extends StatelessWidget {
   final Author author;
@@ -16,17 +16,18 @@ class AuthorDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: Text(author.name)),
-    body: Center(
+    body: const Center(
       child: Column(
         children: [
-          Expanded(
-            child: BookList(
-              books: author.books,
+          SizedBox(width: 10,),
+          /*Expanded(
+            child: ChampignonList(
+              champignons: author.books,
               onTap: (book) {
                 onBookTapped(book);
               },
             ),
-          ),
+          ),*/
         ],
       ),
     ),

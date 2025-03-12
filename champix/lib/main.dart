@@ -8,7 +8,7 @@ import 'src/app.dart';
 
 void main() {
   setupWindow();
-  runApp(const Bookstore());
+  runApp(const ChampignonApp());
 }
 
 const double windowWidth = 480;
