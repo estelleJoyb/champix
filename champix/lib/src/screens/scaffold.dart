@@ -2,11 +2,11 @@ import 'package:adaptive_navigation/adaptive_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class BookstoreScaffold extends StatelessWidget {
+class ChampignonstoreScaffold extends StatelessWidget {
   final Widget child;
   final int selectedIndex;
 
-  const BookstoreScaffold({
+  const ChampignonstoreScaffold({
     required this.child,
     required this.selectedIndex,
     super.key,
@@ -21,13 +21,13 @@ class BookstoreScaffold extends StatelessWidget {
         selectedIndex: selectedIndex,
         body: child,
         onDestinationSelected: (idx) {
-          if (idx == 0) goRouter.go('/books/popular');
-          if (idx == 1) goRouter.go('/authors');
+          if (idx == 0) goRouter.go('/champignon');
+          if (idx == 1) goRouter.go('/detect');
           if (idx == 2) goRouter.go('/settings');
         },
-        destinations: const [
-          AdaptiveScaffoldDestination(title: 'Champignons', icon: Icons.book),
-          AdaptiveScaffoldDestination(title: 'Recettes', icon: Icons.person),
+        destinations:  const [
+          AdaptiveScaffoldDestination(title: 'Champignons', icon: Icons.person),
+          AdaptiveScaffoldDestination(title: 'Identifier', icon: Icons.add_a_photo),
           AdaptiveScaffoldDestination(title: 'Settings', icon: Icons.settings),
         ],
       ),

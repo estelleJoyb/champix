@@ -1,3 +1,3 @@
-export 'data/author.dart';
-export 'data/book.dart';
+export 'data/champignon.dart';
+export 'data/recette.dart';
 export 'data/library.dart';

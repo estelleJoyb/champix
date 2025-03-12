@@ -1,31 +1,29 @@
+import 'package:champix/src/auth.dart';
+import 'package:champix/src/data.dart';
+import 'package:champix/src/screens/champignon_details.dart';
+import 'package:champix/src/screens/champignon_detect.dart';
+import 'package:champix/src/screens/settings.dart';
+import 'package:champix/src/screens/sign_in.dart';
+import 'package:champix/src/widgets/fade_transition_page.dart';
+import 'package:champix/src/screens/champignons.dart';
 import 'package:champix/src/screens/sign_up.dart';
+import 'package:champix/src/screens/scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import 'auth.dart';
-import 'data.dart';
-import 'screens/author_details.dart';
-import 'screens/authors.dart';
-import 'screens/book_details.dart';
-import 'screens/books.dart';
-import 'screens/scaffold.dart';
-import 'screens/settings.dart';
-import 'screens/sign_in.dart';
-import 'widgets/book_list.dart';
-import 'widgets/fade_transition_page.dart';
+import 'package:champix/src/constants/constants.dart';
 
 final appShellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'app shell');
-final booksNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'books shell');
 
-class Bookstore extends StatefulWidget {
-  const Bookstore({super.key});
+class ChampignonApp extends StatefulWidget {
+  const ChampignonApp({super.key});
 
   @override
-  State<Bookstore> createState() => _BookstoreState();
+  State<ChampignonApp> createState() => _ChampignonAppState();
 }
 
-class _BookstoreState extends State<Bookstore> {
+class _ChampignonAppState extends State<ChampignonApp> {
   final ChampixAuth auth = ChampixAuth();
+  int _tabControllerIndex = 2;
 
   String? getRedirectPath(Uri stateUri, bool signedIn) {
     final currentPath = stateUri.toString();
@@ -40,6 +38,16 @@ class _BookstoreState extends State<Bookstore> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        colorScheme: const ColorScheme.dark(
+          secondary: Constants.paleGreen,
+          brightness: Brightness.dark,
+          primary: Constants.taupeGray,
+          surface: Constants.brown,
+          onPrimary: Constants.brown,
+        ),
+      ),
       builder: (context, child) {
         if (child == null) {
           throw ('No child in .router constructor builder');
@@ -49,19 +57,23 @@ class _BookstoreState extends State<Bookstore> {
       routerConfig: GoRouter(
         refreshListenable: auth,
         debugLogDiagnostics: true,
-        initialLocation: '/books/popular',
+        initialLocation: '/champignon',
         redirect: (context, state) {
           final signedIn = ChampixAuth.of(context).signedIn;
           return getRedirectPath(state.uri, signedIn);
         },
         routes: [
+          GoRoute(
+            path: '/',
+            redirect: (context, state) => '/champignon',
+          ),
           ShellRoute(
             navigatorKey: appShellNavigatorKey,
             builder: (context, state, child) {
-              return BookstoreScaffold(
+              return ChampignonstoreScaffold(
                 selectedIndex: switch (state.uri.path) {
-                  var p when p.startsWith('/books') => 0,
-                  var p when p.startsWith('/authors') => 1,
+                  var p when p.startsWith('/champignon') => 0,
+                  var p when p.startsWith('/detect') => 1,
                   var p when p.startsWith('/settings') => 2,
                   _ => 0,
                 },
@@ -69,182 +81,27 @@ class _BookstoreState extends State<Bookstore> {
               );
             },
             routes: [
-              ShellRoute(
-                pageBuilder: (context, state, child) {
-                  return FadeTransitionPage<dynamic>(
-                    key: state.pageKey,
-                    // Use a builder to get the correct BuildContext
-                   child: Builder(
-                      builder: (context) {
-                        return BooksScreen(
-                          onTap: (idx) {
-                            GoRouter.of(context).go(switch (idx) {
-                              0 => '/books/popular',
-                              1 => '/books/new',
-                              2 => '/books/all',
-                              _ => '/books/popular',
-                            });
-                          },
-                          selectedIndex: switch (state.uri.path) {
-                            var p when p.startsWith('/books/popular') => 0,
-                            var p when p.startsWith('/books/new') => 1,
-                            var p when p.startsWith('/books/all') => 2,
-                            _ => 0,
-                          },
-                          child: child,
-                        );
-                      },
-                    ),
-                  );
-                },
-                routes: [
-                  GoRoute(
-                    path: '/books/popular',
-                    pageBuilder: (context, state) {
-                      return FadeTransitionPage<dynamic>(
-                        // Use a builder to get the correct BuildContext
-                        key: state.pageKey,
-                        child: Builder(
-                          builder: (context) {
-                            return BookList(
-                              books: libraryInstance.popularBooks,
-                              onTap: (book) {
-                                GoRouter.of(
-                                  context,
-                                ).go('/books/popular/book/${book.id}');
-                              },
-                            );
-                          },
-                        ),
-                      );
-                    },
-                    routes: [
-                      GoRoute(
-                        path: 'book/:bookId',
-                        parentNavigatorKey: appShellNavigatorKey,
-                        builder: (context, state) {
-                          return BookDetailsScreen(
-                            book: libraryInstance.getBook(
-                              state.pathParameters['bookId'] ?? '',
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                  GoRoute(
-                    path: '/books/new',
-                    pageBuilder: (context, state) {
-                      return FadeTransitionPage<dynamic>(
-                        key: state.pageKey,
-                        // Use a builder to get the correct BuildContext
-                        child: Builder(
-                          builder: (context) {
-                            return BookList(
-                              books: libraryInstance.newBooks,
-                              onTap: (book) {
-                                GoRouter.of(
-                                  context,
-                                ).go('/books/new/book/${book.id}');
-                              },
-                            );
-                          },
-                        ),
-                      );
-                    },
-                    routes: [
-                      GoRoute(
-                        path: 'book/:bookId',
-                        parentNavigatorKey: appShellNavigatorKey,
-                        builder: (context, state) {
-                          return BookDetailsScreen(
-                            book: libraryInstance.getBook(
-                              state.pathParameters['bookId'] ?? '',
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                  GoRoute(
-                    path: '/books/all',
-                    pageBuilder: (context, state) {
-                      return FadeTransitionPage<dynamic>(
-                        key: state.pageKey,
-                        // Use a builder to get the correct BuildContext
-                         child: Builder(
-                          builder: (context) {
-                            return BookList(
-                              books: libraryInstance.allBooks,
-                              onTap: (book) {
-                                GoRouter.of(
-                                  context,
-                                ).go('/books/all/book/${book.id}');
-                              },
-                            );
-                          },
-                        ),
-                      );
-                    },
-                    routes: [
-                      GoRoute(
-                        path: 'book/:bookId',
-                        parentNavigatorKey: appShellNavigatorKey,
-                        builder: (context, state) {
-                          return BookDetailsScreen(
-                            book: libraryInstance.getBook(
-                              state.pathParameters['bookId'] ?? '',
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
               GoRoute(
-                path: '/authors',
+                path: '/champignon',
                 pageBuilder: (context, state) {
                   return FadeTransitionPage<dynamic>(
                     key: state.pageKey,
-                    child: Builder(
-                      builder: (context) {
-                        return AuthorsScreen(
-                          onTap: (author) {
-                            GoRouter.of(
-                              context,
-                            ).go('/authors/author/${author.id}');
-                          },
-                        );
+                    child: ChampignonsScreen(
+                      onTap: (idx) {
+                        setState(() {
+                          _tabControllerIndex = idx;
+                        });
+                      },
+                      selectedIndex: _tabControllerIndex,
+                      champignons: switch (_tabControllerIndex) {
+                        0 => libraryInstance.edibleChampignons,
+                        1 => libraryInstance.nonEdibleChampignons,
+                        2 => libraryInstance.allChampignons,
+                        _ => libraryInstance.allChampignons,
                       },
                     ),
                   );
                 },
-                routes: [
-                  GoRoute(
-                    path: 'author/:authorId',
-                    builder: (context, state) {
-                      final author = libraryInstance.allAuthors.firstWhere(
-                            (author) =>
-                        author.id ==
-                            int.parse(state.pathParameters['authorId']!),
-                      );
-                      // Use a builder to get the correct BuildContext
-                     return Builder(
-                        builder: (context) {
-                          return AuthorDetailsScreen(
-                            author: author,
-                            onBookTapped: (book) {
-                              GoRouter.of(
-                                context,
-                              ).go('/books/all/book/${book.id}');
-                            },
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ],
               ),
               GoRoute(
                 path: '/settings',
@@ -255,43 +112,47 @@ class _BookstoreState extends State<Bookstore> {
                   );
                 },
               ),
+              GoRoute(
+                path: '/detect',
+                builder: (context, state) {
+                  return const ChampignonDetectScreen(
+                  );
+                },
+              ),
+              GoRoute(
+                path: '/champignon/:champignonId',
+                builder: (context, state) {
+                  return ChampignonDetailsScreen(
+                    champignon: libraryInstance.getChampignon(
+                      state.pathParameters['champignonId'] ?? '',
+                    ),
+                  );
+                },
+              ),
+
+
             ],
           ),
           GoRoute(
             path: '/sign-in',
             builder: (context, state) {
-              // Use a builder to get the correct BuildContext
-              return Builder(
-                builder: (context) {
-                  return SignInScreen(
-                    onSignIn: (value) async {
-                      final router = GoRouter.of(context);
-                      await ChampixAuth.of(
-                        context,
-                      ).signIn(value.username, value.password);
-                      router.go('/books/popular');
-                    },
-                  );
+              return SignInScreen(
+                onSignIn: (value) async {
+                  final router = GoRouter.of(context);
+                  await ChampixAuth.of(context).signIn(value.username, value.password);
+                  router.go('/champignon');
                 },
               );
             },
           ),
-
           GoRoute(
             path: '/sign-up',
             builder: (context, state) {
-              // Use a builder to get the correct BuildContext
-              return Builder(
-                builder: (context) {
-                  return SignUpScreen(
-                    onSignUp: (value) async {
-                      final router = GoRouter.of(context);
-                      await ChampixAuth.of(
-                        context,
-                      ).signIn(value.username, value.password);
-                      router.go('/books/popular');
-                    },
-                  );
+              return SignUpScreen(
+                onSignUp: (value) async {
+                  final router = GoRouter.of(context);
+                  await ChampixAuth.of(context).signIn(value.username, value.password);
+                  router.go('/champignon');
                 },
               );
             },
