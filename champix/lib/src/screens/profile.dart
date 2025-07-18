@@ -442,7 +442,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             DateTime.tryParse(item['created_at'] ?? '') ?? DateTime.now();
         final date = '${createdAt.day}/${createdAt.month}/${createdAt.year}';
         final result = item['result'] ?? 'Résultat inconnu';
-        final imageUrl = item['image_url'] ?? '';
+        final imageUrl = item['image_path'] ?? '';
 
         return Container(
           decoration: BoxDecoration(

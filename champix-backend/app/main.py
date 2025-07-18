@@ -28,6 +28,7 @@ app.include_router(mushroom_routes.router, prefix="/mushrooms", tags=["Mushrooms
 app.include_router(ai_router, prefix="/ai", tags=["AI"])
 
 app.mount("/images", StaticFiles(directory="app/static/images"), name="images")
+app.mount("/uploads", StaticFiles(directory="app/uploads"), name="uploads")
 
 if __name__ == "__main__":
     import uvicorn

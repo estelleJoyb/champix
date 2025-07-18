@@ -48,6 +48,7 @@ class UsersService {
         'Content-Type': 'application/json',
       },
     );
+
     return response;
   }
   

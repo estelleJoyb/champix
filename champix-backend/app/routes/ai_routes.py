@@ -15,7 +15,7 @@ import uuid
 
 router = APIRouter()
 
-UPLOAD_DIR = "uploads"
+UPLOAD_DIR = "/app/app/uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @router.post("/predict/", tags=["AI"])
@@ -47,7 +47,7 @@ async def predict_image(
 
     new_history = History(
         user_id=current_user.id,
-        image_path=image_path,
+        image_path="http://localhost:8000/uploads/" + filename,
         result=predicted_class,
     )
     db.add(new_history)

@@ -32,7 +32,7 @@ class AllHistoryScreen extends StatelessWidget {
                 final createdAt = DateTime.tryParse(item['created_at'] ?? '') ?? DateTime.now();
                 final date = '${createdAt.day.toString().padLeft(2, '0')}/${createdAt.month.toString().padLeft(2, '0')}/${createdAt.year}';
                 final result = item['result'] ?? 'Résultat inconnu';
-                final imageUrl = item['image_url'] ?? '';
+                final imageUrl = item['image_path'] ?? '';
 
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16),
