@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:champix/src/components/all_history.dart';
 import 'package:flutter/material.dart';
 import 'package:champix/src/services/users_service.dart';
 import 'package:champix/src/auth.dart';
@@ -335,7 +336,14 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
             ),
             if (history.isNotEmpty)
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AllHistoryScreen(history: history),
+                    ),
+                  );
+                },
                 child: const Text('Voir tout'),
               ),
           ],
@@ -399,7 +407,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: history.length,
+      itemCount: 5,
       separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final item = history[index];
