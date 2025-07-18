@@ -67,7 +67,7 @@ class MushroomAIService {
   static Future<bool> isServerAvailable() async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/'),
+        Uri.parse('$baseUrl/ai/'),
         headers: {'Content-Type': 'application/json'},
       ).timeout(const Duration(seconds: 5));
         return response.statusCode == 200;
@@ -84,8 +84,8 @@ class MushroomAIService {
         throw Exception('Le serveur d\'IA n\'est pas disponible. Assurez-vous que l\'API Python est en cours d\'exécution.');
       }
 
-      final uri = Uri.parse('$baseUrl/predict/');
-      final request = http.MultipartRequest('POST', uri);      // Ajouter le fichier à la requête selon la plateforme
+      final uri = Uri.parse('$baseUrl/ai/predict/');
+      final request = http.MultipartRequest('POST', uri);
       if (kIsWeb) {
         // Sur le web, utiliser XFile directement
         final xFile = XFile(imagePath);
@@ -151,7 +151,7 @@ class MushroomAIService {
       // Vérifier si le serveur est disponible
       if (!(await isServerAvailable())) {
         throw Exception('Le serveur d\'IA n\'est pas disponible. Assurez-vous que l\'API Python est en cours d\'exécution.');
-      }      final uri = Uri.parse('$baseUrl/predict/');
+      }      final uri = Uri.parse('$baseUrl/ai/predict/');
       final request = http.MultipartRequest('POST', uri);
         // Sur toutes les plateformes, utiliser XFile.readAsBytes()
       final bytes = await imageFile.readAsBytes();

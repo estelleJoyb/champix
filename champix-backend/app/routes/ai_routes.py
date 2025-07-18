@@ -29,3 +29,7 @@ async def predict_image(file: UploadFile = File(...)):
         "all_probabilities": {CLASS_NAMES[i]: prob.item() for i, prob in enumerate(probabilities[0])}
     }
     return JSONResponse(content=response_data)
+
+@router.get("/", tags=["AI"])
+def health_check():
+    return {"status": "AI service is running", "model": "mushroom_classifier", "classes": CLASS_NAMES}
