@@ -14,7 +14,6 @@ import 'package:champix/src/constants/constants.dart';
 
 final appShellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'app shell');
 
-
 class ChampignonApp extends StatefulWidget {
   const ChampignonApp({super.key});
 
@@ -40,7 +39,7 @@ class _ChampignonAppState extends State<ChampignonApp> {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Champix',
-       theme: ThemeData(
+      theme: ThemeData(
         brightness: Brightness.dark,
         colorScheme: const ColorScheme.dark(
           secondary: Constants.paleGreen,
@@ -95,12 +94,6 @@ class _ChampignonAppState extends State<ChampignonApp> {
                         });
                       },
                       selectedIndex: _tabControllerIndex,
-                      champignons: switch (_tabControllerIndex) {
-                        0 => libraryInstance.edibleChampignons,
-                        1 => libraryInstance.nonEdibleChampignons,
-                        2 => libraryInstance.allChampignons,
-                        _ => libraryInstance.allChampignons,
-                      },
                     ),
                   );
                 },
@@ -123,10 +116,10 @@ class _ChampignonAppState extends State<ChampignonApp> {
               GoRoute(
                 path: '/champignon/:champignonId',
                 builder: (context, state) {
+                  final champignonId =
+                      state.pathParameters['champignonId'] ?? '';
                   return ChampignonDetailsScreen(
-                    champignon: libraryInstance.getChampignon(
-                      state.pathParameters['champignonId'] ?? '',
-                    ),
+                    champignonId: champignonId,
                   );
                 },
               ),

@@ -1,15 +1,48 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:champix/src/services/mushrooms_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import '../constants/constants.dart';
 import '../data/champignon.dart';
 
-class ChampignonDetailsScreen extends StatelessWidget {
-  final Champignon? champignon;
+class ChampignonDetailsScreen extends StatefulWidget {
+  final String champignonId;
 
-  const ChampignonDetailsScreen({super.key, this.champignon});
+  const ChampignonDetailsScreen({required this.champignonId, Key? key})
+      : super(key: key);
+
+  @override
+  State<ChampignonDetailsScreen> createState() =>
+      _ChampignonDetailsScreenState();
+}
+
+class _ChampignonDetailsScreenState extends State<ChampignonDetailsScreen> {
+  Champignon? champignon;
+  bool isLoading = true;
+  final MushroomService _mushroomService = MushroomService();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchChampignon();
+  }
+
+  Future<void> _fetchChampignon() async {
+    try {
+      final data = await _mushroomService.getMushroomById(widget.champignonId);
+      setState(() {
+        champignon = Champignon.fromJson(data);
+        isLoading = false;
+      });
+    } catch (e) {
+      // Gérer erreur
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   Widget _buildImage(String? imageUrl) {
     if (imageUrl == null) {
@@ -91,7 +124,7 @@ class ChampignonDetailsScreen extends StatelessWidget {
             SvgPicture.asset(
               "assets/images/champignon.svg",
               colorFilter: ColorFilter.mode(
-                champignon!.isEdible ? Constants.paleGreen : Constants.paleRed,
+                champignon!.edible ? Constants.paleGreen : Constants.paleRed,
                 BlendMode.srcIn,
               ),
               height: 24,
@@ -196,20 +229,22 @@ class ChampignonDetailsScreen extends StatelessWidget {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: champignon!.isEdible
+                            color: champignon!.edible
                                 ? Colors.green.withOpacity(0.2)
                                 : Colors.red.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: champignon!.isEdible
+                              color: champignon!.edible
                                   ? Colors.green.withOpacity(0.4)
                                   : Colors.red.withOpacity(0.4),
                             ),
                           ),
                           child: Text(
-                            champignon!.isEdible ? 'Comestible' : 'Non Comestible',
+                            champignon!.edible
+                                ? 'Comestible'
+                                : 'Non Comestible',
                             style: TextStyle(
-                              color: champignon!.isEdible
+                              color: champignon!.edible
                                   ? Colors.greenAccent
                                   : Colors.redAccent,
                               fontWeight: FontWeight.w600,

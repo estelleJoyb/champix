@@ -1,30 +1,33 @@
-from app.models.mushroom_model import Mushroom, MushroomCreate
+from sqlalchemy.orm import Session
+from app.models.mushroom_model import Mushroom as MushroomModel, MushroomCreate
 
-db = []
+def get_mushrooms(db: Session):
+    return db.query(MushroomModel).all()
 
-def get_mushrooms() -> list[Mushroom]:
-    return db
+def get_mushrooms_by_id(db: Session, id):
+    return db.query(MushroomModel).filter(MushroomModel.id == id).first()
 
-def create_mushroom(mushroom: MushroomCreate) -> Mushroom:
-    new_mushroom = Mushroom(id=len(db)+1, **mushroom.dict())
-    db.append(new_mushroom)
-    return new_mushroom
+def create_mushroom(mushroom: MushroomCreate, db: Session):
+    db_mushroom = MushroomModel(**mushroom.dict())
+    db.add(db_mushroom)
+    db.commit()
+    db.refresh(db_mushroom)
+    return db_mushroom
 
-def get_mushroom(mushroom_id: int) -> Mushroom:
-    for mushroom in db:
-        if mushroom.id == mushroom_id:
-            return mushroom
-    return None
+def update_mushroom(mushroom_id: int, mushroom: MushroomCreate, db: Session):
+    db_mushroom = db.query(MushroomModel).filter(MushroomModel.id == mushroom_id).first()
+    if not db_mushroom:
+        return None
+    for field, value in mushroom.dict().items():
+        setattr(db_mushroom, field, value)
+    db.commit()
+    db.refresh(db_mushroom)
+    return db_mushroom
 
-def update_mushroom(mushroom_id: int, mushroom: MushroomCreate) -> Mushroom:
-    for index, existing_mushroom in enumerate(db):
-        if existing_mushroom.id == mushroom_id:
-            updated_mushroom = Mushroom(id=mushroom_id, **mushroom.dict())
-            db[index] = updated_mushroom
-            return updated_mushroom
-    return None
-
-def delete_mushroom(mushroom_id: int) -> bool:
-    global db
-    db = [mushroom for mushroom in db if mushroom.id != mushroom_id]
-    return True if len(db) < len(db) else False
+def delete_mushroom(mushroom_id: int, db: Session):
+    db_mushroom = db.query(MushroomModel).filter(MushroomModel.id == mushroom_id).first()
+    if not db_mushroom:
+        return False
+    db.delete(db_mushroom)
+    db.commit()
+    return True

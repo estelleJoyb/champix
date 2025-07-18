@@ -1,3 +1,4 @@
+import 'package:champix/src/services/mushrooms_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -8,12 +9,10 @@ import '../widgets/champignon_list.dart';
 class ChampignonsScreen extends StatefulWidget {
   final ValueChanged<int> onTap;
   final int selectedIndex;
-  final List<Champignon> champignons;
 
   const ChampignonsScreen({
     required this.onTap,
     required this.selectedIndex,
-    required this.champignons,
     super.key,
   });
 
@@ -24,12 +23,35 @@ class ChampignonsScreen extends StatefulWidget {
 class _ChampignonsScreenState extends State<ChampignonsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late MushroomService _mushroomService;
+
+  List<Champignon> _champignons = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this)
       ..addListener(_handleTabIndexChanged);
+
+    _mushroomService = MushroomService();
+
+    _fetchChampignons();
+  }
+
+  Future<void> _fetchChampignons() async {
+    try {
+      final data = await _mushroomService.getAllMushrooms();
+      setState(() {
+        _champignons = data.map((item) => Champignon.fromJson(item)).toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      print("Erreur récupération champignons : $e");
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -243,7 +265,7 @@ class _ChampignonsScreenState extends State<ChampignonsScreen>
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: ChampignonList(
-                champignons: widget.champignons,
+                champignons: _champignons,
                 onTap: (champignon) {
                   GoRouter.of(context).go('/champignon/${champignon.id}');
                 },

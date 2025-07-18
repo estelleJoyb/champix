@@ -4,6 +4,7 @@ from app.routes import user_routes, mushroom_routes
 from app.auth.auth_routes import auth_router
 from app.routes.ai_routes import router as ai_router
 from app.database import Base, engine
+from app.fixtures import mushroom_fixtures
 
 Base.metadata.create_all(bind=engine)
 
@@ -16,6 +17,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+mushroom_fixtures.load_mushroom_fixtures()
 
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 app.include_router(user_routes.router, prefix="/users", tags=["Users"])
