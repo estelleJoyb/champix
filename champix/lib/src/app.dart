@@ -14,6 +14,7 @@ import 'package:champix/src/constants/constants.dart';
 
 final appShellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'app shell');
 
+
 class ChampignonApp extends StatefulWidget {
   const ChampignonApp({super.key});
 
@@ -38,7 +39,8 @@ class _ChampignonAppState extends State<ChampignonApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      theme: ThemeData(
+      title: 'Champix',
+       theme: ThemeData(
         brightness: Brightness.dark,
         colorScheme: const ColorScheme.dark(
           secondary: Constants.paleGreen,

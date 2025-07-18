@@ -1,10 +1,9 @@
-import 'dart:typed_data';
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
+import 'package:champix/src/components/analysis_screen.dart';
+import 'package:champix/src/components/display_picture_screen.dart';
+import 'package:champix/src/services/camera_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../services/mushroom_ai_service.dart';
-import 'analysis_result_widget.dart';
 
 class TakePictureScreen extends StatefulWidget {
   const TakePictureScreen({super.key, this.camera, this.error});
@@ -17,44 +16,31 @@ class TakePictureScreen extends StatefulWidget {
 }
 
 class TakePictureScreenState extends State<TakePictureScreen> {
-  CameraController? _controller;
-  Future<void>? _initializeControllerFuture;
-  bool takingPicture = false;
-  XFile? image;
+  final CameraService _cameraService = CameraService();
   final ImagePicker _picker = ImagePicker();
+  XFile? image;
 
   @override
   void initState() {
     super.initState();
     if (widget.camera != null) {
-      _controller = CameraController(
-        widget.camera!,
-        ResolutionPreset.medium,
-      );
-      _initializeControllerFuture = _controller!.initialize();
+      _cameraService.initializeCamera(widget.camera!);
     }
   }
+
   @override
   void dispose() {
-    _controller?.dispose();
+    _cameraService.dispose();
     super.dispose();
-  }  void takePicture() async {
-    if (_controller == null || _initializeControllerFuture == null) return;
-    
-    setState(() {
-      takingPicture = true;
-    });
+  }
+
+  void _takePicture() async {
     try {
-      await _initializeControllerFuture!;
-      final XFile newImage = await _controller!.takePicture();
+      final newImage = await _cameraService.takePicture();
       setState(() {
-        takingPicture = false;
         image = newImage;
       });
     } catch (e) {
-      setState(() {
-        takingPicture = false;
-      });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error taking picture: $e')),
@@ -62,9 +48,10 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       }
     }
   }
-  void pickImageFromGallery() async {
+
+  void _pickImageFromGallery() async {
     try {
-      final XFile? pickedImage = await _picker.pickImage(source: ImageSource.gallery);
+      final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
       if (pickedImage != null) {
         setState(() {
           image = pickedImage;
@@ -77,373 +64,554 @@ class TakePictureScreenState extends State<TakePictureScreen> {
         );
       }
     }
-  }  @override
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Si une image est sélectionnée, l'afficher avec les options
     if (image != null) {
-      return SingleChildScrollView(
-        child: Column(
-          children: [
-            DisplayPictureScreen(imageFile: image!),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      image = null;
-                    });
-                  },
-                  child: const Text('Changer d\'image'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AnalysisScreen(imageFile: image!),
+      return Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color.fromARGB(255, 36, 36, 36),
+              Color.fromARGB(255, 59, 50, 43),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Header avec titre moderne
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                  ),
-                  child: const Text('Analyser'),
+                      child: const Icon(
+                        Icons.photo_camera_rounded,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Text(
+                      'Photo capturée',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ],
+              ),
+              // Image preview avec design moderne
+              Expanded(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: DisplayPictureScreen(imageFile: image!),
+                  ),
+                ),
+              ),
+              // Boutons d'action modernisés
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 56,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.white.withValues(alpha: 0.2),
+                              Colors.white.withValues(alpha: 0.1),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(16),
+                            onTap: () => setState(() => image = null),
+                            child: const Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.refresh_rounded,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Reprendre',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Container(
+                        height: 56,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFF4CAF50),
+                              Color(0xFF45a049),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF4CAF50)
+                                  .withValues(alpha: 0.4),
+                              blurRadius: 12,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(16),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    AnalysisScreen(imageFile: image!),
+                              ),
+                            ),
+                            child: const Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.analytics_rounded,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Analyser',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
 
-    // Si il y a une erreur avec la caméra, afficher seulement l'option galerie
-    if (widget.error != null) {
+    if (widget.error != null || widget.camera == null) {
       return _buildGalleryOnlyInterface();
     }
 
-    // Si pas de caméra disponible, afficher seulement l'option galerie
-    if (widget.camera == null) {
-      return _buildGalleryOnlyInterface();
-    }
-
-    // Si la caméra est disponible, utiliser FutureBuilder
-    return FutureBuilder<void>(
-      future: _initializeControllerFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasError) {
-            return _buildGalleryOnlyInterface();
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0xFF1a1a1a),
+            Color(0xFF2d2d2d),
+          ],
+        ),
+      ),
+      child: FutureBuilder<void>(
+        future: _cameraService.initializeControllerFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              return _buildGalleryOnlyInterface();
+            }
+            return _buildCameraInterface();
           }
-          return _buildCameraInterface();
-        } else {
-          return const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Initialisation de la caméra...'),
-              ],
-            ),
-          );
-        }
-      },
-    );
-  }
-
-  Widget _buildGalleryOnlyInterface() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.photo_library,
-            size: 100,
-            color: Colors.grey,
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            'Caméra non disponible',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          const Text(
-            'Sélectionnez une photo depuis votre galerie',
-            style: TextStyle(fontSize: 16),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 30),
-          ElevatedButton.icon(
-            onPressed: pickImageFromGallery,
-            icon: const Icon(Icons.photo_library),
-            label: const Text('Choisir une photo'),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-            ),
-          ),
-          if (widget.error != null) ...[
-            const SizedBox(height: 20),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange),
+          return Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color.fromARGB(255, 36, 36, 36),
+                  Color.fromARGB(255, 59, 50, 43),
+                ],
               ),
-              child: Row(
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.warning, color: Colors.orange),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      'Erreur caméra: ${widget.error}',
-                      style: const TextStyle(fontSize: 12),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: const BoxDecoration(
+                      color: Colors.white12,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      strokeWidth: 3,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Initialisation de la caméra...',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
               ),
             ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildGalleryOnlyInterface() {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color.fromARGB(255, 36, 36, 36),
+            Color.fromARGB(255, 59, 50, 43),
           ],
-        ],
+        ),
+      ),
+      child: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Icône moderne avec animation
+              Container(
+                padding: const EdgeInsets.all(30),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.3),
+                    width: 2,
+                  ),
+                ),
+                child: const Icon(
+                  Icons.photo_library_rounded,
+                  size: 80,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 32),
+              // Titre principal
+              const Text(
+                'Caméra non disponible',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Sous-titre
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 40),
+                child: const Text(
+                  'Sélectionnez une photo depuis votre galerie pour continuer',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white70,
+                    height: 1.4,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(height: 48),
+              // Bouton moderne
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 40),
+                child: Container(
+                  width: double.infinity,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Colors.white, Color(0xFFf8f9fa)],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(16),
+                      onTap: _pickImageFromGallery,
+                      child: const Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.photo_library_rounded,
+                              color: Color(0xFF667eea),
+                              size: 24,
+                            ),
+                            SizedBox(width: 12),
+                            Text(
+                              'Choisir une photo',
+                              style: TextStyle(
+                                color: Color(0xFF667eea),
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // Message d'erreur stylisé
+              if (widget.error != null) ...[
+                const SizedBox(height: 32),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 32),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.orange.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withValues(alpha: 0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.warning_rounded,
+                          color: Colors.orange,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Erreur caméra',
+                              style: TextStyle(
+                                color: Colors.orange,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${widget.error}',
+                              style: TextStyle(
+                                color: Colors.orange.withValues(alpha: 0.8),
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildCameraInterface() {
-    return SingleChildScrollView(
+    return SafeArea(
       child: Column(
         children: [
-          CameraPreview(_controller!),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: FloatingActionButton(
-                  onPressed: takingPicture ? null : takePicture,
-                  heroTag: "camera",
-                  child: const Icon(Icons.camera_alt),
+          // Header avec titre
+          Container(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.photo_camera_rounded,
+                    color: Colors.white,
+                    size: 24,
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: FloatingActionButton(
-                  onPressed: pickImageFromGallery,
-                  heroTag: "gallery",
-                  child: const Icon(Icons.photo_library),
+                const SizedBox(width: 12),
+                const Text(
+                  'Prendre une photo',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );  }
-}
-
-class DisplayPictureScreen extends StatefulWidget {
-  final XFile imageFile;
-
-  const DisplayPictureScreen({super.key, required this.imageFile});
-
-  @override
-  State<DisplayPictureScreen> createState() => _DisplayPictureScreenState();
-}
-
-class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
-  Uint8List? _imageBytes;
-  String? _errorMessage;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadImage();
-  }
-  Future<void> _loadImage() async {
-    try {
-      // Sur toutes les plateformes, utiliser XFile.readAsBytes()
-      final bytes = await widget.imageFile.readAsBytes();
-      if (mounted) {
-        setState(() {
-          _imageBytes = bytes;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _errorMessage = 'Error loading image: $e';
-        });
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_errorMessage != null) {
-      // Afficher le message d'erreur maintenant que le context est disponible
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(_errorMessage!)),
-          );
-        }
-      });
-      
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error, color: Colors.red, size: 64),
-            const SizedBox(height: 16),
-            Text(
-              _errorMessage!,
-              style: const TextStyle(color: Colors.red),
-              textAlign: TextAlign.center,
+              ],
             ),
-          ],
-        ),
-      );
-    }
-    
-    if (_imageBytes == null) {
-      return const Center(child: CircularProgressIndicator());
-    } else {
-      return Image.memory(
-        _imageBytes!,
-        fit: BoxFit.contain,
-      );
-    }
-  }
-}
-
-class AnalysisScreen extends StatefulWidget {
-  final XFile imageFile;
-
-  const AnalysisScreen({super.key, required this.imageFile});
-
-  @override
-  State<AnalysisScreen> createState() => _AnalysisScreenState();
-}
-
-class _AnalysisScreenState extends State<AnalysisScreen> {
-  bool _isAnalyzing = false;
-  MushroomAnalysisResult? _result;
-  String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    _analyzeImage();
-  }  Future<void> _analyzeImage() async {
-    setState(() {
-      _isAnalyzing = true;
-      _error = null;
-      _result = null;
-    });
-
-    try {
-      final result = await MushroomAIService.analyzeImageFile(widget.imageFile);
-      setState(() {
-        _result = result;
-        _isAnalyzing = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _isAnalyzing = false;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Analyse du Champignon'),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [            // Afficher l'image
-            Container(
-              height: 300,
-              width: double.infinity,
-              margin: const EdgeInsets.all(16.0),
+          ),
+          // Camera preview avec design moderne
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.0),
-                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: FutureBuilder<Uint8List>(
-                  future: widget.imageFile.readAsBytes(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return Image.memory(
-                        snapshot.data!,
-                        fit: BoxFit.cover,
-                      );
-                    }
-                    return const Center(child: CircularProgressIndicator());
-                  },
-                ),
+                borderRadius: BorderRadius.circular(20),
+                child: CameraPreview(_cameraService.controller!),
               ),
             ),
-
-            // État de l'analyse
-            if (_isAnalyzing)
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 16),
-                    Text('Analyse en cours...'),
-                    Text('Cela peut prendre quelques secondes.'),
-                  ],
-                ),
-              ),
-
-            // Erreur
-            if (_error != null)
-              Container(
-                margin: const EdgeInsets.all(16.0),
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8.0),
-                  border: Border.all(color: Colors.red),
-                ),
-                child: Column(
-                  children: [
-                    const Icon(Icons.error, color: Colors.red, size: 48),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Erreur d\'analyse',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
+          ),
+          // Boutons d'action modernisés
+          Container(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                // Bouton galerie
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.3),
+                      width: 2,
+                    ),
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(30),
+                      onTap: _pickImageFromGallery,
+                      child: const Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Icon(
+                          Icons.photo_library_rounded,
+                          color: Colors.white,
+                          size: 28,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(_error!),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _analyzeImage,
-                      child: const Text('Réessayer'),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-
-            // Résultat
-            if (_result != null)
-              AnalysisResultWidget(result: _result!),
-
-            const SizedBox(height: 20),
-          ],
-        ),
+                // Bouton caméra principal
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Colors.white, Color(0xFFf8f9fa)],
+                    ),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(40),
+                      onTap: _cameraService.takingPicture ? null : _takePicture,
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        child: Icon(
+                          Icons.camera_alt_rounded,
+                          color: _cameraService.takingPicture
+                              ? Colors.grey
+                              : const Color(0xFF667eea),
+                          size: 36,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                // Espace pour symmétrie
+                const SizedBox(width: 60),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -13,8 +13,6 @@ class UserORM(Base):
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
 
-    first_name = Column(String, nullable=True)
-    last_name = Column(String, nullable=True)
     bio = Column(String, nullable=True)
     avatar_url = Column(String, nullable=True)
 
@@ -25,8 +23,6 @@ class UserCreate(BaseModel):
     email: str
     password: str
 
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
     bio: Optional[str] = None
     avatar_url: Optional[str] = None
 
@@ -35,8 +31,6 @@ class UserUpdate(BaseModel):
     email: Optional[str] = None
     password: Optional[str] = None
 
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
     bio: Optional[str] = None
     avatar_url: Optional[str] = None
 
@@ -46,8 +40,6 @@ class User(BaseModel):
     email: str
     is_active: bool
 
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
     bio: Optional[str] = None
     avatar_url: Optional[str] = None
 
@@ -62,8 +54,6 @@ class UserRead(BaseModel):
     username: str
     email: str
 
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
     bio: Optional[str] = None
     avatar_url: Optional[str] = None
 
