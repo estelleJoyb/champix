@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:champix/src/constants/constants.dart';
-import 'package:champix/src/data/champignon.dart';
-import 'package:champix/src/widgets/champignon_list.dart';
+import '../constants/constants.dart';
+import '../data/champignon.dart';
+import '../widgets/champignon_list.dart';
 
 class ChampignonsScreen extends StatefulWidget {
   final ValueChanged<int> onTap;
@@ -35,47 +35,222 @@ class _ChampignonsScreenState extends State<ChampignonsScreen>
   @override
   void dispose() {
     _tabController.removeListener(_handleTabIndexChanged);
+    _tabController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     _tabController.index = widget.selectedIndex;
+    final theme = Theme.of(context);
+
     return Scaffold(
+      backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: const Text('Champignons'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: [
-            Tab(
-              text: 'Comestibles',
-              icon: SvgPicture.asset(
-                "assets/images/champignon.svg",
-                colorFilter: const ColorFilter.mode(Constants.paleGreen, BlendMode.srcIn),
-              ),
-            ),
-            Tab(
-              text: 'Vénéneux',
-              icon: SvgPicture.asset(
-                "assets/images/champignon.svg",
-                colorFilter: const ColorFilter.mode(Constants.paleRed, BlendMode.srcIn),
-              ),
-            ),
-            Tab(
-              text: 'Tous',
-              icon: SvgPicture.asset(
-                "assets/images/champignon.svg",
-                colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-              ),
-            ),
-          ],
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: const Text(
+          'Champignons',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+          ),
         ),
+        centerTitle: true,
       ),
-      body: ChampignonList(
-        champignons: widget.champignons,
-        onTap: (champignon) {
-          GoRouter.of(context).go('/champignon/${champignon.id}');
-        },
+      body: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color(0xFF3E2723).withOpacity(0.2),
+                  Colors.white.withOpacity(0.05),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(16.0),
+              border: Border.all(color: Colors.white.withOpacity(0.1)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: TabBar(
+              controller: _tabController,
+              indicator: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xFF3E2723),
+                    Color.fromARGB(255, 85, 70, 57),
+                  ],
+                ),
+                borderRadius: BorderRadius.all(Radius.circular(14.0)),
+              ),
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.white70,
+              labelStyle: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ) ??
+                  const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+              tabs: [
+                Tab(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SvgPicture.asset(
+                        "assets/images/champignon.svg",
+                        colorFilter: ColorFilter.mode(
+                          Constants.paleGreen,
+                          BlendMode.srcIn,
+                        ),
+                        height: 20,
+                      ),
+                      SizedBox(width: 8),
+                      Text('Comestibles'),
+                    ],
+                  ),
+                ),
+                Tab(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SvgPicture.asset(
+                        "assets/images/champignon.svg",
+                        colorFilter: ColorFilter.mode(
+                          Constants.paleRed,
+                          BlendMode.srcIn,
+                        ),
+                        height: 20,
+                      ),
+                      SizedBox(width: 8),
+                      Text('Vénéneux'),
+                    ],
+                  ),
+                ),
+                Tab(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SvgPicture.asset(
+                        "assets/images/champignon.svg",
+                        colorFilter: ColorFilter.mode(
+                          Colors.white,
+                          BlendMode.srcIn,
+                        ),
+                        height: 20,
+                      ),
+                      SizedBox(width: 8),
+                      Text('Tous'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: Container(
+              key: ValueKey<int>(_tabController.index),
+              height: 200,
+              margin:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+                border: Border.all(color: Colors.white.withOpacity(0.1)),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16.0),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: _tabController.index == 0
+                            ? Colors.green.shade700
+                            : _tabController.index == 1
+                                ? Colors.red.shade700
+                                : Colors.grey.shade700,
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color:
+                              Colors.black.withOpacity(0.3),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            const Color(0xFF3E2723).withOpacity(0.5),
+                          ],
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          _tabController.index == 0
+                              ? 'Champignons Comestibles'
+                              : _tabController.index == 1
+                                  ? 'Champignons Vénéneux'
+                                  : 'Tous les Champignons',
+                          style: theme.textTheme.titleLarge?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black.withOpacity(0.5),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ) ??
+                              const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: ChampignonList(
+                champignons: widget.champignons,
+                onTap: (champignon) {
+                  GoRouter.of(context).go('/champignon/${champignon.id}');
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
