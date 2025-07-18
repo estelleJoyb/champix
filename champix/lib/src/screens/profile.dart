@@ -11,7 +11,8 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderStateMixin {
+class _ProfileScreenState extends State<ProfileScreen>
+    with SingleTickerProviderStateMixin {
   final UsersService _usersService = UsersService();
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -20,7 +21,8 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   String username = 'john_doe';
   String email = 'john.doe@email.com';
   String avatarUrl = 'https://i.pravatar.cc/300?img=10';
-  String bio = 'Mycologue amateur passionné de nature, photographie et champignons rares.';
+  String bio =
+      'Mycologue amateur passionné de nature, photographie et champignons rares.';
   List<dynamic> history = [];
   bool isLoading = true;
 
@@ -37,8 +39,9 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOutCubic));
-    
+    ).animate(CurvedAnimation(
+        parent: _animationController, curve: Curves.easeOutCubic));
+
     _loadUserData();
     _loadUserHistory();
     _animationController.forward();
@@ -97,12 +100,13 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                   padding: const EdgeInsets.all(20),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
-                      _buildStatsSection(),
+                      _buildStatsSection(history, bio),
                       const SizedBox(height: 24),
                       _buildActionButtons(),
                       const SizedBox(height: 32),
                       _buildHistorySection(),
-                      const SizedBox(height: 100), // Espace pour le bouton de déconnexion
+                      const SizedBox(
+                          height: 100), // Espace pour le bouton de déconnexion
                     ]),
                   ),
                 ),
@@ -141,7 +145,8 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                   child: Container(
                     decoration: const BoxDecoration(
                       image: DecorationImage(
-                        image: NetworkImage('https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=500'),
+                        image: NetworkImage(
+                            'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=500'),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -164,7 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha:0.3),
+                              color: Colors.black.withValues(alpha: 0.3),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -179,10 +184,11 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                     const SizedBox(height: 16),
                     Text(
                       username,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
                   ],
                 ),
@@ -194,7 +200,18 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     );
   }
 
-  Widget _buildStatsSection() {
+  Widget _buildStatsSection(List<dynamic> history, String bio) {
+    final edibleCount = history
+        .where(
+            (item) => (item['result'] ?? '').toLowerCase() == 'edible')
+        .length;
+    final dangerousCount = history.where((item) {
+      final edibility = (item['result'] ?? '').toLowerCase();
+      return edibility.contains('poisonous') ||
+          edibility.contains('mortel') ||
+          edibility.contains('dangereux');
+    }).length;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -202,7 +219,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -214,16 +231,17 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
           Text(
             'À propos',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           const SizedBox(height: 12),
           Text(
             bio,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              height: 1.5,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
-            ),
+                  height: 1.5,
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                ),
           ),
           const SizedBox(height: 20),
           Row(
@@ -236,16 +254,16 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
               ),
               const SizedBox(width: 24),
               _buildStatItem(
-                icon: Icons.camera_alt,
-                label: 'Photos',
-                value: '${history.length * 2}',
-                color: const Color(0xFFF4A460),
+                icon: Icons.restaurant,
+                label: 'Comestibles',
+                value: '$edibleCount',
+                color: const Color(0xFF81C784),
               ),
               const SizedBox(width: 24),
               _buildStatItem(
-                icon: Icons.favorite,
-                label: 'Favoris',
-                value: '12',
+                icon: Icons.warning,
+                label: 'Dangereux',
+                value: '$dangerousCount',
                 color: const Color(0xFFEF5350),
               ),
             ],
@@ -276,8 +294,8 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
           Text(
             value,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           Text(
             label,
@@ -331,8 +349,8 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
             Text(
               'Historique des analyses',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             if (history.isNotEmpty)
               TextButton(
@@ -380,21 +398,28 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
             Icon(
               Icons.photo_camera_outlined,
               size: 64,
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+              color:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
             Text(
               'Aucune analyse pour le moment',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.7),
+                  ),
             ),
             const SizedBox(height: 8),
             Text(
               'Commencez par prendre une photo de champignon !',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.5),
+                  ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -404,14 +429,17 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   }
 
   Widget _buildHistoryList() {
+    final reversedHistory = history.reversed.toList().take(5).toList();
+
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: 5,
+      itemCount: reversedHistory.length,
       separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
-        final item = history[index];
-        final createdAt = DateTime.tryParse(item['created_at'] ?? '') ?? DateTime.now();
+        final item = reversedHistory[index];
+        final createdAt =
+            DateTime.tryParse(item['created_at'] ?? '') ?? DateTime.now();
         final date = '${createdAt.day}/${createdAt.month}/${createdAt.year}';
         final result = item['result'] ?? 'Résultat inconnu';
         final imageUrl = item['image_url'] ?? '';
@@ -422,7 +450,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha:0.05),
+                color: Colors.black.withOpacity(0.05),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -446,7 +474,10 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                         height: 60,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          color: Theme.of(context).colorScheme.primary.withValues(alpha:0.1),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.1),
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),
@@ -454,10 +485,14 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                               ? Image.network(
                                   imageUrl,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) => 
-                                    Icon(Icons.image_not_supported, color: Theme.of(context).colorScheme.primary),
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Icon(Icons.image_not_supported,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary),
                                 )
-                              : Icon(Icons.camera_alt, color: Theme.of(context).colorScheme.primary),
+                              : Icon(Icons.camera_alt,
+                                  color: Theme.of(context).colorScheme.primary),
                         ),
                       ),
                     ),
@@ -468,23 +503,35 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                         children: [
                           Text(
                             'Analyse du $date',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             result,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.7),
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.7),
+                                ),
                           ),
                         ],
                       ),
                     ),
                     Icon(
                       Icons.chevron_right,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.3),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.3),
                     ),
                   ],
                 ),
