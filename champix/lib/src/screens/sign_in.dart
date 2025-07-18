@@ -1,6 +1,8 @@
-import 'package:url_launcher/link.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:url_launcher/link.dart';
 import 'package:champix/src/constants/constants.dart';
+import 'package:champix/src/auth.dart';
 
 class Credentials {
   final String username;
@@ -10,9 +12,7 @@ class Credentials {
 }
 
 class SignInScreen extends StatefulWidget {
-  final ValueChanged<Credentials> onSignIn;
-
-  const SignInScreen({required this.onSignIn, super.key});
+  const SignInScreen({super.key});
 
   @override
   State<SignInScreen> createState() => _SignInScreenState();
@@ -21,6 +21,29 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  String? _error;
+
+  Future<void> _handleSignIn() async {
+    final auth = ChampixAuth.of(context);
+
+    final success = await auth.signIn(
+      _usernameController.text,
+      _passwordController.text,
+    );
+
+    if (!mounted) return; 
+
+    if (!success) {
+      setState(() {
+        _error = "Invalid email or password";
+      });
+    } else {
+      setState(() {
+        _error = null;
+      });
+      GoRouter.of(context).go('/champignon');
+    }
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -37,8 +60,10 @@ class _SignInScreenState extends State<SignInScreen> {
                 'Sign in',
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
+              if (_error != null)
+                Text(_error!, style: const TextStyle(color: Colors.red)),
               TextField(
-                decoration: const InputDecoration(labelText: 'Username'),
+                decoration: const InputDecoration(labelText: 'Email'),
                 controller: _usernameController,
               ),
               TextField(
@@ -49,23 +74,21 @@ class _SignInScreenState extends State<SignInScreen> {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: TextButton(
-                  onPressed: () async {
-                    widget.onSignIn(
-                      Credentials(
-                        _usernameController.value.text,
-                        _passwordController.value.text,
-                      ),
-                    );
-                  },
+                  onPressed: _handleSignIn,
                   child: const Text('Sign in'),
                 ),
               ),
               Link(
                 uri: Uri.parse('/sign-up'),
-                builder:
-                    (context, followLink) => TextButton(
+                builder: (context, followLink) => TextButton(
                   onPressed: followLink,
-                  child: const Text('Don\'t have an account? Sign up',style: TextStyle(color: Constants.paleGreen, decoration: TextDecoration.underline),),
+                  child: const Text(
+                    'Don\'t have an account? Sign up',
+                    style: TextStyle(
+                      color: Constants.paleGreen,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
                 ),
               ),
             ],

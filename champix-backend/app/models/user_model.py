@@ -7,19 +7,19 @@ class UserORM(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
+    username = Column(String, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
-    
+
 class UserCreate(BaseModel):
-    name: str
+    username: str
     email: str
     password: str
 
 class User(BaseModel):
     id: int
-    name: str
+    username: str
     email: str
     is_active: bool
 
@@ -30,6 +30,6 @@ class UserInDB(User):
     hashed_password: str
 
 class UserUpdate(BaseModel):
-    name: Optional[str] = None
+    username: Optional[str] = None
     email: Optional[str] = None
     password: Optional[str] = None

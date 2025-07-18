@@ -14,7 +14,7 @@ def list_users(db: Session = Depends(get_db)):
 @router.post("/", response_model=User)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     return user_controller.create_user(user, db)
-
+    
 @router.get("/{user_id}", response_model=User)
 def get_user(user_id: int, db: Session = Depends(get_db)):
     user = user_controller.get_user(user_id, db)

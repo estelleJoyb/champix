@@ -115,8 +115,7 @@ class _ChampignonAppState extends State<ChampignonApp> {
               GoRoute(
                 path: '/detect',
                 builder: (context, state) {
-                  return const ChampignonDetectScreen(
-                  );
+                  return const ChampignonDetectScreen();
                 },
               ),
               GoRoute(
@@ -129,32 +128,18 @@ class _ChampignonAppState extends State<ChampignonApp> {
                   );
                 },
               ),
-
-
             ],
           ),
           GoRoute(
             path: '/sign-in',
             builder: (context, state) {
-              return SignInScreen(
-                onSignIn: (value) async {
-                  final router = GoRouter.of(context);
-                  await ChampixAuth.of(context).signIn(value.username, value.password);
-                  router.go('/champignon');
-                },
-              );
+              return const SignInScreen();
             },
           ),
           GoRoute(
             path: '/sign-up',
             builder: (context, state) {
-              return SignUpScreen(
-                onSignUp: (value) async {
-                  final router = GoRouter.of(context);
-                  await ChampixAuth.of(context).signIn(value.username, value.password);
-                  router.go('/champignon');
-                },
-              );
+              return const SignUpScreen();
             },
           ),
         ],

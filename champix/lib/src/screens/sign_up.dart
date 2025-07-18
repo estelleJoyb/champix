@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/link.dart';
 import 'package:champix/src/constants/constants.dart';
+import 'package:champix/src/auth.dart';
+
 class Credentials {
   final String username;
   final String password;
@@ -10,9 +13,7 @@ class Credentials {
 }
 
 class SignUpScreen extends StatefulWidget {
-  final ValueChanged<Credentials> onSignUp;
-
-  const SignUpScreen({required this.onSignUp, super.key});
+  const SignUpScreen({super.key});
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -22,6 +23,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _emailController = TextEditingController();
+  String? _error;
+
+  Future<void> _handleSignUp() async {
+    final auth = ChampixAuth.of(context);
+    final success = await auth.signUp(
+      _usernameController.text,
+      _passwordController.text,
+      _emailController.text,
+    );
+    if (!mounted) return; 
+
+    if (!success) {
+      setState(() {
+        _error = "Invalid email or password";
+      });
+    } else {
+      setState(() {
+        _error = null;
+      });
+      GoRouter.of(context).go('/champignon');
+    }
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -38,6 +61,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 'Sign up',
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
+              if (_error != null)
+                Text(_error!, style: const TextStyle(color: Colors.red)),
               TextField(
                 decoration: const InputDecoration(labelText: 'Username'),
                 controller: _usernameController,
@@ -54,24 +79,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: TextButton(
-                  onPressed: () async {
-                    widget.onSignUp(
-                      Credentials(
-                        _usernameController.value.text,
-                        _passwordController.value.text,
-                        _emailController.value.text,
-                      ),
-                    );
-                  },
+                  onPressed: _handleSignUp,
                   child: const Text('Sign up'),
                 ),
               ),
               Link(
                 uri: Uri.parse('/sign-in'),
-                builder:
-                    (context, followLink) => TextButton(
+                builder: (context, followLink) => TextButton(
                   onPressed: followLink,
-                  child: const Text('Already have an account? Sign in', style: TextStyle(color: Constants.paleGreen, decoration: TextDecoration.underline),),
+                  child: const Text(
+                    'Already have an account? Sign in',
+                    style: TextStyle(
+                      color: Constants.paleGreen,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
                 ),
               ),
             ],

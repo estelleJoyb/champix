@@ -1,35 +1,43 @@
-
 import 'package:flutter/widgets.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'services/users_service.dart';
 
-/// A mock authentication service
 class ChampixAuth extends ChangeNotifier {
   bool _signedIn = false;
+  String? _token;
+  final UsersService _usersService = UsersService();
 
   bool get signedIn => _signedIn;
+  String? get token => _token;
 
   Future<void> signOut() async {
-    await Future<void>.delayed(const Duration(milliseconds: 200));
-    // Sign out.
     _signedIn = false;
+    _token = null;
     notifyListeners();
   }
 
   Future<bool> signUp(String username, String password, String email) async {
-    //todo create account
-    await Future<void>.delayed(const Duration(milliseconds: 200));
-    // Sign in. Allow any password.
-    _signedIn = true;
-    notifyListeners();
-    return _signedIn;
+    final response = await _usersService.register(username, email, password);
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      return await signIn(email, password);
+    }
+    return false;
   }
 
-  Future<bool> signIn(String username, String password) async {
-    //todo sign in
-    await Future<void>.delayed(const Duration(milliseconds: 200));
-    // Sign in. Allow any password.
-    _signedIn = true;
+  Future<bool> signIn(String email, String password) async {
+    final response = await _usersService.login(email, password);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      _token = data['access_token'];
+      _signedIn = true;
+      notifyListeners();
+      return true;
+    }
+    _signedIn = false;
+    _token = null;
     notifyListeners();
-    return _signedIn;
+    return false;
   }
 
   @override

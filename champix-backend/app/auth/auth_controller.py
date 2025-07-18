@@ -1,8 +1,7 @@
 from fastapi import HTTPException, Depends
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.models.user_model import User
-from app.auth.auth_model import UserCreate, UserInDB
+from app.models.user_model import UserORM
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
@@ -32,7 +31,7 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 
 def authenticate_user(db: Session, email: str, password: str):
-    user = db.query(User).filter(User.email == email).first()
+    user = db.query(UserORM).filter(UserORM.email == email).first()
     if not user or not verify_password(password, user.hashed_password):
         return False
     return user
@@ -50,7 +49,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
             raise credentials_exception
     except jwt.PyJWTError:
         raise credentials_exception
-    user = db.query(User).filter(User.email == email).first()
+    user = db.query(UserORM).filter(UserORM.email == email).first()
     if user is None:
         raise credentials_exception
     return user

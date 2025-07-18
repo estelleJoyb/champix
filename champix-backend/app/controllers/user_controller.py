@@ -4,9 +4,11 @@ from app.models.user_model import UserORM, UserCreate, UserUpdate
 from passlib.hash import bcrypt
 
 
+def get_password_hash(password: str) -> str:
+    return bcrypt.hash(password)
+
 def get_users(db: Session):
     return db.query(UserORM).all()
-
 
 def get_user(user_id: int, db: Session) -> UserORM:
     user = db.query(UserORM).filter(UserORM.id == user_id).first()
@@ -17,27 +19,18 @@ def get_user(user_id: int, db: Session) -> UserORM:
         )
     return user
 
-
-def create_user(user: UserCreate, db: Session) -> UserORM:
-    db_user = db.query(UserORM).filter(UserORM.email == user.email).first()
-    if db_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
-        )
-
-    hashed_password = bcrypt.hash(user.password)
-    new_user = UserORM(
-        name=user.name,
+def create_user(user: UserCreate, db: Session):
+    hashed_password = get_password_hash(user.password)
+    db_user = UserORM(
+        username=user.username,
         email=user.email,
         hashed_password=hashed_password,
         is_active=True
     )
-    db.add(new_user)
+    db.add(db_user)
     db.commit()
-    db.refresh(new_user)
-    return new_user
-
+    db.refresh(db_user)
+    return db_user
 
 def update_user(user_id: int, user_data: UserUpdate, db: Session) -> UserORM:
     user = get_user(user_id, db)
