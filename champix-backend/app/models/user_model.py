@@ -13,6 +13,11 @@ class UserORM(Base):
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
 
+    first_name = Column(String, nullable=True)
+    last_name = Column(String, nullable=True)
+    bio = Column(String, nullable=True)
+    avatar_url = Column(String, nullable=True)
+
     history = relationship("History", back_populates="user", cascade="all, delete-orphan")
 
 class UserCreate(BaseModel):
@@ -20,11 +25,31 @@ class UserCreate(BaseModel):
     email: str
     password: str
 
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
+
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    email: Optional[str] = None
+    password: Optional[str] = None
+
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
+
 class User(BaseModel):
     id: int
     username: str
     email: str
     is_active: bool
+
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
 
     class Config:
         orm_mode = True
@@ -32,15 +57,15 @@ class User(BaseModel):
 class UserInDB(User):
     hashed_password: str
 
-class UserUpdate(BaseModel):
-    username: Optional[str] = None
-    email: Optional[str] = None
-    password: Optional[str] = None
-
 class UserRead(BaseModel):
     id: int
     username: str
     email: str
+
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
 
     class Config:
         orm_mode = True

@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:champix/src/services/users_service.dart';
 import 'package:flutter/material.dart';
+import 'package:champix/src/services/users_service.dart';
 import 'package:champix/src/auth.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -10,135 +10,207 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _ProfileScreenState extends State<ProfileScreen> {
   final UsersService _usersService = UsersService();
 
-  String username = '';
-  String email = '';
-  bool isLoadingUser = true;
-  bool isLoadingHistory = true;
-
-  List<String> historyItems = [];
+  String username = 'john_doe';
+  String email = 'john.doe@email.com';
+  String firstName = 'John';
+  String lastName = 'Doe';
+  String avatarUrl = 'https://i.pravatar.cc/300?img=10';
+  String bio = 'Mycologue amateur passionné de nature, photographie et champignons rares.';
+  List<dynamic> history = [];
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
     _loadUserData();
     _loadUserHistory();
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   Future<void> _loadUserData() async {
     try {
       final userData = await _usersService.getCurrentUser();
       setState(() {
-        username = userData['username'] ?? '';
-        email = userData['email'] ?? '';
-        isLoadingUser = false;
+        username = userData['username'] ?? username;
+        email = userData['email'] ?? email;
+        firstName = userData['first_name'] ?? firstName;
+        lastName = userData['last_name'] ?? lastName;
+        avatarUrl = userData['avatar_url'] ?? avatarUrl;
+        bio = userData['bio'] ?? bio;
       });
-    } catch (e) {
-      setState(() {
-        isLoadingUser = false;
-      });
-      // Optionnel: affiche un message d’erreur ou logger
-    }
+    } catch (_) {}
   }
 
   Future<void> _loadUserHistory() async {
     try {
       final response = await _usersService.getUserHistory();
       if (response.statusCode == 200) {
-        final List<dynamic> jsonList = jsonDecode(response.body);
         setState(() {
-          historyItems = jsonList.map((item) {
-            final createdAt = DateTime.parse(item['created_at']);
-            final formattedDate = "${createdAt.day}/${createdAt.month}/${createdAt.year}";
-            final result = item['result'] ?? 'Résultat inconnu';
-            return 'Analyse du $formattedDate - $result';
-          }).toList();
-          isLoadingHistory = false;
-        });
-      } else {
-        setState(() {
-          isLoadingHistory = false;
+          history = jsonDecode(response.body);
         });
       }
-    } catch (e) {
-      setState(() {
-        isLoadingHistory = false;
-      });
-      // Optionnel: gérer l’erreur
-    }
+    } catch (_) {}
+    setState(() => isLoading = false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profil'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Infos'),
-            Tab(text: 'Historique'),
-          ],
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: TabBarView(
-          controller: _tabController,
-          children: [
-            // Onglet Infos
-            isLoadingUser
-                ? const Center(child: CircularProgressIndicator())
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Nom d\'utilisateur:', style: Theme.of(context).textTheme.titleMedium),
-                      const SizedBox(height: 8),
-                      Text(username, style: Theme.of(context).textTheme.bodyLarge),
-                      const SizedBox(height: 24),
-                      Text('Email:', style: Theme.of(context).textTheme.titleMedium),
-                      const SizedBox(height: 8),
-                      Text(email, style: Theme.of(context).textTheme.bodyLarge),
-                      const Spacer(),
-                      Center(
-                        child: FilledButton(
-                          onPressed: () {
-                            ChampixAuth.of(context).signOut();
-                          },
-                          child: const Text('Déconnexion'),
-                        ),
-                      ),
-                    ],
-                  ),
+      appBar: AppBar(title: const Text("Mon Profil")),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.only(bottom: 100),
+              child: Column(
+                children: [
+                  _buildHeader(context),
+                  const SizedBox(height: 16,),
+                  _buildButtons(),
+                  const SizedBox(height: 16),
+                  _buildHistoryList(),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          ),
 
-            // Onglet Historique
-            isLoadingHistory
-                ? const Center(child: CircularProgressIndicator())
-                : historyItems.isEmpty
-                    ? const Center(child: Text('Aucun historique pour le moment.'))
-                    : ListView.separated(
-                        itemCount: historyItems.length,
-                        separatorBuilder: (_, __) => const Divider(),
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            leading: const Icon(Icons.history),
-                            title: Text(historyItems[index]),
-                          );
-                        },
-                      ),
-          ],
+          Positioned(
+            bottom: 20,
+            left: 20,
+            right: 20,
+            child: FilledButton.icon(
+              onPressed: () => ChampixAuth.of(context).signOut(),
+              icon: const Icon(Icons.logout),
+              label: const Text("Déconnexion"),
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.only(top: 32, bottom: 16),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF3D9970), Color(0xFF2ECC71)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
       ),
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 48,
+            backgroundColor: Colors.white,
+            child: CircleAvatar(
+              radius: 44,
+              backgroundImage: NetworkImage(avatarUrl),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            username,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(email, style: const TextStyle(color: Colors.white)),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Text(
+              bio,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildButtons() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          OutlinedButton.icon(
+            icon: const Icon(Icons.edit),
+            label: const Text("Modifier"),
+            onPressed: () {},
+          ),
+          const SizedBox(width: 12),
+          OutlinedButton.icon(
+            icon: const Icon(Icons.settings),
+            label: const Text("Paramètres"),
+            onPressed: () {},
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHistoryList() {
+    if (isLoading) {
+      return const Padding(
+        padding: EdgeInsets.only(top: 32),
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (history.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.only(top: 32),
+        child: Text('Aucune analyse enregistrée.'),
+      );
+    }
+
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      itemCount: history.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      itemBuilder: (context, index) {
+        final item = history[index];
+        final createdAt = DateTime.tryParse(item['created_at'] ?? '') ?? DateTime.now();
+        final date = '${createdAt.day}/${createdAt.month}/${createdAt.year}';
+        final result = item['result'] ?? 'Résultat inconnu';
+        final imageUrl = item['image_url'] ?? '';
+
+        return Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          elevation: 2,
+          child: ListTile(
+            contentPadding: const EdgeInsets.all(12),
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: imageUrl.isNotEmpty
+                  ? Image.network(imageUrl, width: 56, height: 56, fit: BoxFit.cover)
+                  : const Icon(Icons.image, size: 48),
+            ),
+            title: Text('Analyse du $date'),
+            subtitle: Text(result),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              // TODO: show analysis detail
+            },
+          ),
+        );
+      },
     );
   }
 }
