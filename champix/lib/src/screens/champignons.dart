@@ -265,7 +265,11 @@ class _ChampignonsScreenState extends State<ChampignonsScreen>
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: ChampignonList(
-                champignons: _champignons,
+                champignons: _champignons
+                    .where((c) => _tabController.index == 2 ||
+                        (c.edible && _tabController.index == 0) ||
+                        (!c.edible && _tabController.index == 1))
+                    .toList(),
                 onTap: (champignon) {
                   GoRouter.of(context).go('/champignon/${champignon.id}');
                 },
