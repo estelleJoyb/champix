@@ -1,15 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.models.mushroom_model import MushroomCreate, MushroomOut
+from app.models.mushroom_model import MushroomCreate, MushroomOut, Mushroom
 from app.controllers.mushroom_controller import get_mushrooms, get_mushrooms_by_id, create_mushroom, update_mushroom, delete_mushroom
 from app.database import get_db
 from app.auth.auth_controller import get_current_user
+from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
 @router.get("/", response_model=list[MushroomOut])
-def list_mushrooms(db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
-    return get_mushrooms(db)
+def get_mushrooms(db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
+    mushrooms = db.query(Mushroom).all()
+    return mushrooms
 
 @router.get("/{mushroom_id}", response_model=MushroomOut)
 def mushrooms_id_data(mushroom_id: int, db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):

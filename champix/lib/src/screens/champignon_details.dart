@@ -64,7 +64,7 @@ class _ChampignonDetailsScreenState extends State<ChampignonDetailsScreen> {
       final Uint8List bytes = base64Decode(base64String);
       return Image.memory(
         bytes,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         errorBuilder: (context, error, stackTrace) => Image.asset(
           'assets/images/default_mushroom.jpg',
           fit: BoxFit.contain,
@@ -73,7 +73,7 @@ class _ChampignonDetailsScreenState extends State<ChampignonDetailsScreen> {
     }
     return Image.network(
       imageUrl,
-      fit: BoxFit.cover,
+      fit: BoxFit.contain,
       errorBuilder: (context, error, stackTrace) => Image.asset(
         'assets/images/default_mushroom.jpg',
         fit: BoxFit.contain,

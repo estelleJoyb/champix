@@ -23,7 +23,8 @@ class MushroomService {
       },
     );
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final decoded = utf8.decode(response.bodyBytes);
+      return jsonDecode(decoded);
     } else {
       throw Exception("Erreur lors de la récupération des champignons");
     }
@@ -42,7 +43,8 @@ class MushroomService {
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final decoded = utf8.decode(response.bodyBytes);
+      return jsonDecode(decoded);
     } else {
       throw Exception("Erreur lors de la récupération du champignon");
     }
