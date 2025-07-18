@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy.orm import relationship
 from app.database import Base
 from pydantic import BaseModel
 from typing import Optional
@@ -11,6 +12,8 @@ class UserORM(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
+
+    history = relationship("History", back_populates="user", cascade="all, delete-orphan")
 
 class UserCreate(BaseModel):
     username: str

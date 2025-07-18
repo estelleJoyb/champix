@@ -1,3 +1,4 @@
+import 'package:champix/src/services/mushroom_ai_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/link.dart';
@@ -41,6 +42,7 @@ class _SignInScreenState extends State<SignInScreen> {
       setState(() {
         _error = null;
       });
+      MushroomAIService.setToken(auth.token!);
       GoRouter.of(context).go('/champignon');
     }
   }

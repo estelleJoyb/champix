@@ -63,6 +63,12 @@ class MushroomAnalysisResult {
 
 class MushroomAIService {
   static const String baseUrl = 'http://127.0.0.1:8000';
+
+  static String? _token;
+
+  static void setToken(String token) {
+    _token = token;
+  }
   
   static Future<bool> isServerAvailable() async {
     try {
@@ -84,8 +90,14 @@ class MushroomAIService {
         throw Exception('Le serveur d\'IA n\'est pas disponible. Assurez-vous que l\'API Python est en cours d\'exécution.');
       }
 
+     
+
       final uri = Uri.parse('$baseUrl/ai/predict/');
       final request = http.MultipartRequest('POST', uri);
+       if (_token != null) {
+        request.headers['Authorization'] = 'Bearer $_token';
+      }
+
       if (kIsWeb) {
         // Sur le web, utiliser XFile directement
         final xFile = XFile(imagePath);
@@ -153,6 +165,9 @@ class MushroomAIService {
         throw Exception('Le serveur d\'IA n\'est pas disponible. Assurez-vous que l\'API Python est en cours d\'exécution.');
       }      final uri = Uri.parse('$baseUrl/ai/predict/');
       final request = http.MultipartRequest('POST', uri);
+      if (_token != null) {
+        request.headers['Authorization'] = 'Bearer $_token';
+      }
         // Sur toutes les plateformes, utiliser XFile.readAsBytes()
       final bytes = await imageFile.readAsBytes();
       final filename = imageFile.name.isNotEmpty ? imageFile.name : 'image.jpg';
@@ -178,7 +193,7 @@ class MushroomAIService {
         'file',
         bytes,
         filename: filename,
-        contentType: contentType, // Utiliser le type MIME détecté
+        contentType: contentType,
       ));
 
       // Envoyer la requête
