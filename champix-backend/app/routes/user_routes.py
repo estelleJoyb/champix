@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.controllers import user_controller
-from app.models.user_model import User, UserCreate, UserUpdate
+from app.models.user_model import UserORM, User, UserCreate, UserUpdate, UserRead
 from app.database import get_db
 from app.auth.auth_controller import get_current_user
 from app.controllers import history_controller
-from app.models.history_model import HistoryRead
+from app.models.history_model import History, HistoryRead
+from typing import List
 
 router = APIRouter()
 
@@ -17,16 +18,21 @@ def list_users(db: Session = Depends(get_db)):
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     return user_controller.create_user(user, db)
 
+@router.get("/me", response_model=UserRead)
+def get_user_me(current_user: UserORM = Depends(get_current_user)):
+    return current_user
+    
+@router.get("/history", response_model=List[HistoryRead])
+def get_user_history(current_user: UserORM = Depends(get_current_user), db: Session = Depends(get_db)):
+    history = db.query(History).filter(History.user_id == current_user.id).all()
+    return history
+
 @router.get("/{user_id}", response_model=User)
 def get_user(user_id: int, db: Session = Depends(get_db)):
     user = user_controller.get_user(user_id, db)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user
-    
-@router.get("/{user_id}/history", response_model=list[HistoryRead])
-def get_user_history(user_id: int, db: Session = Depends(get_db)):
-    return history_controller.get_user_history(user_id, db)
 
 @router.put("/{user_id}", response_model=User)
 def update_user(user_id: int, user: UserUpdate, db: Session = Depends(get_db)):

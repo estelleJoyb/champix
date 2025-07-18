@@ -2,7 +2,7 @@ import 'package:champix/src/auth.dart';
 import 'package:champix/src/data.dart';
 import 'package:champix/src/screens/champignon_details.dart';
 import 'package:champix/src/screens/champignon_detect.dart';
-import 'package:champix/src/screens/settings.dart';
+import 'package:champix/src/screens/profile.dart';
 import 'package:champix/src/screens/sign_in.dart';
 import 'package:champix/src/widgets/fade_transition_page.dart';
 import 'package:champix/src/screens/champignons.dart';
@@ -74,7 +74,7 @@ class _ChampignonAppState extends State<ChampignonApp> {
                 selectedIndex: switch (state.uri.path) {
                   var p when p.startsWith('/champignon') => 0,
                   var p when p.startsWith('/detect') => 1,
-                  var p when p.startsWith('/settings') => 2,
+                  var p when p.startsWith('/profile') => 2,
                   _ => 0,
                 },
                 child: child,
@@ -104,11 +104,11 @@ class _ChampignonAppState extends State<ChampignonApp> {
                 },
               ),
               GoRoute(
-                path: '/settings',
+                path: '/profile',
                 pageBuilder: (context, state) {
                   return FadeTransitionPage<dynamic>(
                     key: state.pageKey,
-                    child: const SettingsScreen(),
+                    child: const ProfileScreen(),
                   );
                 },
               ),

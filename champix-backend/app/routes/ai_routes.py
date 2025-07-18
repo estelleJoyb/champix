@@ -26,13 +26,11 @@ async def predict_image(
 ):
     contents = await file.read()
     
-    # 1. Lire l'image
     try:
         image = Image.open(io.BytesIO(contents)).convert('RGB')
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Impossible de lire le fichier image. Erreur: {e}")
 
-    # 2. Transformer et prédire
     image_tensor = transform(image).unsqueeze(0).to(device)
     with torch.no_grad():
         outputs = model(image_tensor)
@@ -42,13 +40,11 @@ async def predict_image(
     predicted_class = CLASS_NAMES[top_class_index.item()]
     confidence = top_prob.item()
 
-    # 3. Sauvegarder l’image sur disque
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"{uuid.uuid4().hex}_{timestamp}.png"
     image_path = os.path.join(UPLOAD_DIR, filename)
     image.save(image_path)
 
-    # 4. Créer une entrée d’historique
     new_history = History(
         user_id=current_user.id,
         image_path=image_path,
@@ -58,7 +54,6 @@ async def predict_image(
     db.commit()
     db.refresh(new_history)
 
-    # 5. Retourner la réponse
     response_data = {
         "prediction": predicted_class,
         "confidence": confidence,

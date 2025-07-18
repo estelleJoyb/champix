@@ -7,18 +7,12 @@ from typing import Optional
 
 class History(Base):
     __tablename__ = "history"
-
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     image_path = Column(String, nullable=False)
     result = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
-
     user = relationship("UserORM", back_populates="history")
-
-class HistoryCreate(BaseModel):
-    image_path: str
-    result: str
 
 
 class HistoryRead(BaseModel):
@@ -29,3 +23,8 @@ class HistoryRead(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class HistoryCreate(BaseModel):
+    image_path: str
+    result: str
