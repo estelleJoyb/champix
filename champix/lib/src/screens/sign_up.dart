@@ -55,30 +55,68 @@ class _SignUpScreenState extends State<SignUpScreen>
     super.dispose();
   }
 
+  bool isValidEmail(String email) {
+    final emailRegex = RegExp(
+      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+    );
+    return emailRegex.hasMatch(email);
+  }
+
+  bool isStrongPassword(String password) {
+    final lengthCheck = password.length >= 8;
+    final upperCheck = password.contains(RegExp(r'[A-Z]'));
+    final digitCheck = password.contains(RegExp(r'\d'));
+    final specialCheck = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+    return lengthCheck && upperCheck && digitCheck && specialCheck;
+  }
+
   Future<void> _handleSignUp() async {
-    if (_usernameController.text.isEmpty ||
-        _emailController.text.isEmpty ||
-        _passwordController.text.isEmpty ||
-        _confirmPasswordController.text.isEmpty) {
+    final username = _usernameController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    final confirmPassword = _confirmPasswordController.text;
+
+    if (username.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
       setState(() {
         _error = "Please fill in all fields";
       });
       return;
     }
 
-    if (_passwordController.text != _confirmPasswordController.text) {
+    if (username.length < 5) {
+      setState(() {
+        _error = "Username must be at least 5 characters long";
+      });
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setState(() {
+        _error = "Please enter a valid email address";
+      });
+      return;
+    }
+
+    if (password != confirmPassword) {
       setState(() {
         _error = "Passwords do not match";
       });
       return;
     }
 
+    if (!isStrongPassword(password)) {
+      setState(() {
+        _error =
+            "Password must be at least 8 characters, include uppercase, digit and special character";
+      });
+      return;
+    }
+
     final auth = ChampixAuth.of(context);
-    final success = await auth.signUp(
-      _usernameController.text,
-      _passwordController.text,
-      _emailController.text,
-    );
+    final success = await auth.signUp(username, password, email);
 
     if (!mounted) return;
 
@@ -97,6 +135,7 @@ class _SignUpScreenState extends State<SignUpScreen>
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -108,7 +147,8 @@ class _SignUpScreenState extends State<SignUpScreen>
           child: FadeTransition(
             opacity: _fadeAnimation,
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: Container(
                 constraints: const BoxConstraints(maxWidth: 400),
                 padding: const EdgeInsets.all(24.0),
@@ -155,7 +195,8 @@ class _SignUpScreenState extends State<SignUpScreen>
                         decoration: BoxDecoration(
                           color: Colors.red.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8.0),
-                          border: Border.all(color: Colors.red.withOpacity(0.4)),
+                          border:
+                              Border.all(color: Colors.red.withOpacity(0.4)),
                         ),
                         child: Row(
                           children: [
