@@ -2,7 +2,7 @@ import 'package:champix/src/auth.dart';
 import 'package:champix/src/data.dart';
 import 'package:champix/src/screens/champignon_details.dart';
 import 'package:champix/src/screens/champignon_detect.dart';
-import 'package:champix/src/screens/settings.dart';
+import 'package:champix/src/screens/profile.dart';
 import 'package:champix/src/screens/sign_in.dart';
 import 'package:champix/src/widgets/fade_transition_page.dart';
 import 'package:champix/src/screens/champignons.dart';
@@ -38,6 +38,7 @@ class _ChampignonAppState extends State<ChampignonApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      title: 'Champix',
       theme: ThemeData(
         brightness: Brightness.dark,
         colorScheme: const ColorScheme.dark(
@@ -74,7 +75,7 @@ class _ChampignonAppState extends State<ChampignonApp> {
                 selectedIndex: switch (state.uri.path) {
                   var p when p.startsWith('/champignon') => 0,
                   var p when p.startsWith('/detect') => 1,
-                  var p when p.startsWith('/settings') => 2,
+                  var p when p.startsWith('/profile') => 2,
                   _ => 0,
                 },
                 child: child,
@@ -93,68 +94,47 @@ class _ChampignonAppState extends State<ChampignonApp> {
                         });
                       },
                       selectedIndex: _tabControllerIndex,
-                      champignons: switch (_tabControllerIndex) {
-                        0 => libraryInstance.edibleChampignons,
-                        1 => libraryInstance.nonEdibleChampignons,
-                        2 => libraryInstance.allChampignons,
-                        _ => libraryInstance.allChampignons,
-                      },
                     ),
                   );
                 },
               ),
               GoRoute(
-                path: '/settings',
+                path: '/profile',
                 pageBuilder: (context, state) {
                   return FadeTransitionPage<dynamic>(
                     key: state.pageKey,
-                    child: const SettingsScreen(),
+                    child: const ProfileScreen(),
                   );
                 },
               ),
               GoRoute(
                 path: '/detect',
                 builder: (context, state) {
-                  return const ChampignonDetectScreen(
-                  );
+                  return const ChampignonDetectScreen();
                 },
               ),
               GoRoute(
                 path: '/champignon/:champignonId',
                 builder: (context, state) {
+                  final champignonId =
+                      state.pathParameters['champignonId'] ?? '';
                   return ChampignonDetailsScreen(
-                    champignon: libraryInstance.getChampignon(
-                      state.pathParameters['champignonId'] ?? '',
-                    ),
+                    champignonId: champignonId,
                   );
                 },
               ),
-
-
             ],
           ),
           GoRoute(
             path: '/sign-in',
             builder: (context, state) {
-              return SignInScreen(
-                onSignIn: (value) async {
-                  final router = GoRouter.of(context);
-                  await ChampixAuth.of(context).signIn(value.username, value.password);
-                  router.go('/champignon');
-                },
-              );
+              return const SignInScreen();
             },
           ),
           GoRoute(
             path: '/sign-up',
             builder: (context, state) {
-              return SignUpScreen(
-                onSignUp: (value) async {
-                  final router = GoRouter.of(context);
-                  await ChampixAuth.of(context).signIn(value.username, value.password);
-                  router.go('/champignon');
-                },
-              );
+              return const SignUpScreen();
             },
           ),
         ],

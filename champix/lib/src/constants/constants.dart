@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Constants {
+  static const Color white = Color.fromARGB(255, 255, 255, 255);
   static const Color paleRed = Color(0xFFE7717D);
   static const Color lightGray = Color(0xFFC2CAD0);
   static const Color taupeGray = Color(0xFFC2B9B0);
