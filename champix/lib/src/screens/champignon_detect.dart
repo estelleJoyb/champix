@@ -14,32 +14,44 @@ class ChampignonDetectScreen extends StatefulWidget {
 class _ChampignonDetectScreenState extends State<ChampignonDetectScreen>
     with SingleTickerProviderStateMixin {
   CameraDescription? camera;
+  bool _isLoading = true;
+  String? _error;
 
   void setupCamera() async {
-    final cameras = await availableCameras();
-    setState(() {
-      print("camera !!");
-      camera = cameras.first;
-    });
+    try {
+      final cameras = await availableCameras();
+      setState(() {
+        if (cameras.isNotEmpty) {
+          camera = cameras.first;
+        }
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+    }
   }
 
-@override
+  @override
   void initState() {
     setupCamera();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Identifier un Champignon'),
+        title: const Text('Mushroom Detection'),
       ),
-      body: camera != null ? TakePictureScreen(camera: camera!,) : const Center(child: CircularProgressIndicator()),
-
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : TakePictureScreen(
+              camera: camera,
+              error: _error,
+            ),
     );
-
-
   }
-
 }
