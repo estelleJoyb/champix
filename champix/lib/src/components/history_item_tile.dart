@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:champix/src/services/mushroom_ai_service.dart';
 import 'package:flutter/material.dart';
 
 class HistoryItemTile extends StatelessWidget {
@@ -12,6 +15,9 @@ class HistoryItemTile extends StatelessWidget {
     final result = item['result'] ?? 'Résultat inconnu';
     final imageUrl = item['image_url'] ?? '';
 
+    final detailJson = jsonDecode(item['analyse_detail']);
+    final analyseDetail = MushroomAnalysisResult.fromJson(detailJson);
+
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -25,10 +31,7 @@ class HistoryItemTile extends StatelessWidget {
         ),
         title: Text('Analyse du $formattedDate'),
         subtitle: Text(result),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: () {
-          // Action future : afficher détails de l'analyse
-        },
+        trailing: const Icon(Icons.chevron_right)
       ),
     );
   }

@@ -1,5 +1,8 @@
 import 'dart:convert';
 import 'package:champix/src/components/all_history.dart';
+import 'package:champix/src/components/analysis_screen.dart';
+import 'package:champix/src/services/mushroom_ai_service.dart';
+import 'package:champix/src/widgets/analysis_result_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:champix/src/services/users_service.dart';
 import 'package:champix/src/auth.dart';
@@ -101,8 +104,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
                       _buildStatsSection(history, bio),
-                      const SizedBox(height: 24),
-                      _buildActionButtons(),
                       const SizedBox(height: 32),
                       _buildHistorySection(),
                       const SizedBox(
@@ -202,8 +203,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   Widget _buildStatsSection(List<dynamic> history, String bio) {
     final edibleCount = history
-        .where(
-            (item) => (item['result'] ?? '').toLowerCase() == 'edible')
+        .where((item) => (item['result'] ?? '').toLowerCase() == 'edible')
         .length;
     final dangerousCount = history.where((item) {
       final edibility = (item['result'] ?? '').toLowerCase();
@@ -235,15 +235,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ),
           ),
           const SizedBox(height: 12),
-          Text(
-            bio,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  height: 1.5,
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
-                ),
-          ),
-          const SizedBox(height: 20),
           Row(
             children: [
               _buildStatItem(
@@ -303,39 +294,6 @@ class _ProfileScreenState extends State<ProfileScreen>
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildActionButtons() {
-    return Row(
-      children: [
-        Expanded(
-          child: ElevatedButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.edit),
-            label: const Text("Modifier le profil"),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Theme.of(context).colorScheme.primary),
-          ),
-          child: IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.settings),
-            iconSize: 24,
-            padding: const EdgeInsets.all(16),
-          ),
-        ),
-      ],
     );
   }
 
@@ -444,6 +402,9 @@ class _ProfileScreenState extends State<ProfileScreen>
         final result = item['result'] ?? 'Résultat inconnu';
         final imageUrl = item['image_path'] ?? '';
 
+        final detailJson = jsonDecode(item['analyse_detail']);
+        final analyseDetail = MushroomAnalysisResult.fromJson(detailJson);
+
         return Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
@@ -461,7 +422,21 @@ class _ProfileScreenState extends State<ProfileScreen>
             child: InkWell(
               borderRadius: BorderRadius.circular(16),
               onTap: () {
-                // TODO: show analysis detail
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => Scaffold(
+                      appBar: AppBar(
+                        backgroundColor: Theme.of(context).colorScheme.surface,
+                        elevation: 0,
+                        title: const Text('Résultat de l’analyse'),
+                      ),
+                      body: AnalysisResultWidget(
+                        result: analyseDetail,
+                      ),
+                    ),
+                  ),
+                );
               },
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -549,7 +524,6 @@ class _ProfileScreenState extends State<ProfileScreen>
       margin: const EdgeInsets.symmetric(horizontal: 20),
       child: ElevatedButton.icon(
         onPressed: () async {
-          // Animation de sortie
           await _animationController.reverse();
           ChampixAuth.of(context).signOut();
         },
@@ -558,7 +532,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFFEF5350),
           foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 28),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),

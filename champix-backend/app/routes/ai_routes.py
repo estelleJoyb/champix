@@ -12,6 +12,7 @@ import torch
 import os
 from datetime import datetime
 import uuid
+import json
 
 router = APIRouter()
 
@@ -47,9 +48,17 @@ async def predict_image(
 
     new_history = History(
         user_id=current_user.id,
-        image_path="http://localhost:8000/uploads/" + filename,
+        image_path=f"http://localhost:8000/uploads/{filename}",
         result=predicted_class,
+        analyse_detail=json.dumps({
+            "prediction": predicted_class,
+            "confidence": confidence,
+            "all_probabilities": {
+                CLASS_NAMES[i]: prob.item() for i, prob in enumerate(probabilities[0])
+            }
+        }),
     )
+
     db.add(new_history)
     db.commit()
     db.refresh(new_history)
@@ -64,6 +73,7 @@ async def predict_image(
             "created_at": new_history.created_at.isoformat()
         }
     }
+
     return JSONResponse(content=response_data)
 
 @router.get("/", tags=["AI"])

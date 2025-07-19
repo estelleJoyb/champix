@@ -9,7 +9,6 @@ class ChampignonList extends StatelessWidget {
 
   Widget buildImage(String? url) {
     if (url != null && url.startsWith('http')) {
-      print(url);
       return Image.network(
         url,
         fit: BoxFit.cover,
