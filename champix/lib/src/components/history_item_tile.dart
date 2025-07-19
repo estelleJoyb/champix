@@ -12,7 +12,7 @@ class HistoryItemTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final createdAt = DateTime.tryParse(item['created_at'] ?? '') ?? DateTime.now();
     final formattedDate = "${createdAt.day}/${createdAt.month}/${createdAt.year}";
-    final result = item['result'] ?? 'Résultat inconnu';
+    final result = item['result'] ?? 'Unknown result';
     final imageUrl = item['image_url'] ?? '';
 
     final detailJson = jsonDecode(item['analyse_detail']);
@@ -29,7 +29,7 @@ class HistoryItemTile extends StatelessWidget {
               ? Image.network(imageUrl, width: 56, height: 56, fit: BoxFit.cover)
               : const Icon(Icons.image_not_supported, size: 56),
         ),
-        title: Text('Analyse du $formattedDate'),
+        title: Text('Analysis $formattedDate'),
         subtitle: Text(result),
         trailing: const Icon(Icons.chevron_right)
       ),

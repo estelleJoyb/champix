@@ -72,7 +72,7 @@ class _ChampignonsScreenState extends State<ChampignonsScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
-          'Champignons',
+          'Mushrooms',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -140,7 +140,7 @@ class _ChampignonsScreenState extends State<ChampignonsScreen>
                         height: 20,
                       ),
                       SizedBox(width: 8),
-                      Text('Comestibles'),
+                      Text('Edibles'),
                     ],
                   ),
                 ),
@@ -157,7 +157,7 @@ class _ChampignonsScreenState extends State<ChampignonsScreen>
                         height: 20,
                       ),
                       SizedBox(width: 8),
-                      Text('Vénéneux'),
+                      Text('Non-edibles'),
                     ],
                   ),
                 ),
@@ -174,7 +174,7 @@ class _ChampignonsScreenState extends State<ChampignonsScreen>
                         height: 20,
                       ),
                       SizedBox(width: 8),
-                      Text('Tous'),
+                      Text('All Mushrooms'),
                     ],
                   ),
                 ),
@@ -233,10 +233,10 @@ class _ChampignonsScreenState extends State<ChampignonsScreen>
                       child: Center(
                         child: Text(
                           _tabController.index == 0
-                              ? 'Champignons Comestibles'
+                              ? 'Edible Mushrooms'
                               : _tabController.index == 1
-                                  ? 'Champignons Vénéneux'
-                                  : 'Tous les Champignons',
+                                  ? 'Non-edible Mushrooms'
+                                  : 'All Mushrooms',
                           style: theme.textTheme.titleLarge?.copyWith(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,

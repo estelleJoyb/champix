@@ -19,7 +19,7 @@ class UsersService {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'username': username,
-        'email': email,
+        'email': email.toLowerCase(),
         'password': password,
       }),
     );
@@ -28,10 +28,11 @@ class UsersService {
 
   Future<http.Response> login(String email, String password) async {
     final url = Uri.parse('$baseUrl/auth/token');
+    final emailLower = email.toLowerCase();
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: 'username=$email&password=$password',
+      body: 'username=$emailLower&password=$password',
     );
     return response;
   }

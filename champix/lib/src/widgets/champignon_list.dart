@@ -112,8 +112,8 @@ class ChampignonList extends StatelessWidget {
                             const SizedBox(height: 8),
                             Text(
                               champignon.edible
-                                  ? 'Comestible'
-                                  : 'Non Comestible',
+                                  ? 'Edible'
+                                  : 'Non-edible',
                               style: theme.textTheme.bodyMedium?.copyWith(
                                     color: champignon.edible
                                         ? Colors.greenAccent

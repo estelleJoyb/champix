@@ -61,14 +61,14 @@ class _SignUpScreenState extends State<SignUpScreen>
         _passwordController.text.isEmpty ||
         _confirmPasswordController.text.isEmpty) {
       setState(() {
-        _error = "Veuillez remplir tous les champs";
+        _error = "Please fill in all fields";
       });
       return;
     }
 
     if (_passwordController.text != _confirmPasswordController.text) {
       setState(() {
-        _error = "Les mots de passe ne correspondent pas";
+        _error = "Passwords do not match";
       });
       return;
     }
@@ -84,7 +84,7 @@ class _SignUpScreenState extends State<SignUpScreen>
 
     if (!success) {
       setState(() {
-        _error = "Erreur lors de l'inscription";
+        _error = "Failed to create account. Please try again.";
       });
     } else {
       setState(() {
@@ -136,7 +136,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Inscription',
+                      'Sign Up',
                       style: theme.textTheme.headlineSmall?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -181,7 +181,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                     TextField(
                       controller: _usernameController,
                       decoration: InputDecoration(
-                        labelText: 'Nom d\'utilisateur',
+                        labelText: 'Username',
                         labelStyle: const TextStyle(color: Colors.white70),
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.05),
@@ -220,7 +220,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                     TextField(
                       controller: _passwordController,
                       decoration: InputDecoration(
-                        labelText: 'Mot de passe',
+                        labelText: 'Password',
                         labelStyle: const TextStyle(color: Colors.white70),
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.05),
@@ -240,7 +240,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                     TextField(
                       controller: _confirmPasswordController,
                       decoration: InputDecoration(
-                        labelText: 'Confirmer le mot de passe',
+                        labelText: 'Confirm Password',
                         labelStyle: const TextStyle(color: Colors.white70),
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.05),
@@ -270,7 +270,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                         shadowColor: Colors.black.withOpacity(0.3),
                       ),
                       child: const Text(
-                        'S\'inscrire',
+                        'Sign Up',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -282,8 +282,8 @@ class _SignUpScreenState extends State<SignUpScreen>
                       uri: Uri.parse('/sign-in'),
                       builder: (context, followLink) => TextButton(
                         onPressed: followLink,
-                        child: Text(
-                          'Déjà un compte ? Connectez-vous',
+                        child: const Text(
+                          'Already have an account? Sign In',
                           style: TextStyle(
                             color: Constants.paleGreen,
                             fontSize: 14,

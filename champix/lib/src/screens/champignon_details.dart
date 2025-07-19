@@ -90,7 +90,7 @@ class _ChampignonDetailsScreenState extends State<ChampignonDetailsScreen> {
         backgroundColor: const Color(0xFF121212),
         body: Center(
           child: Text(
-            'Pas de champignons trouvés.',
+            'No mushroom found',
             style: theme.textTheme.titleLarge?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
@@ -241,8 +241,8 @@ class _ChampignonDetailsScreenState extends State<ChampignonDetailsScreen> {
                           ),
                           child: Text(
                             champignon!.edible
-                                ? 'Comestible'
-                                : 'Non Comestible',
+                                ? 'Edibles'
+                                : 'Non-edibles',
                             style: TextStyle(
                               color: champignon!.edible
                                   ? Colors.greenAccent

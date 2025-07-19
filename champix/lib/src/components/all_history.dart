@@ -16,7 +16,7 @@ class AllHistoryScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text("Historique des analyses"),
+        title: const Text("Analyses History"),
         backgroundColor: Colors.black,
         elevation: 0,
         foregroundColor: Colors.white,
@@ -24,7 +24,7 @@ class AllHistoryScreen extends StatelessWidget {
       body: history.isEmpty
           ? Center(
               child: Text(
-                "Aucune analyse disponible",
+                "No history available",
                 style:
                     theme.textTheme.titleMedium?.copyWith(color: Colors.white),
               ),
@@ -56,7 +56,7 @@ class AllHistoryScreen extends StatelessWidget {
                             appBar: AppBar(
                               backgroundColor: theme.colorScheme.surface,
                               elevation: 0,
-                              title: const Text('Résultat de l’analyse'),
+                              title: const Text('Analysis Result'),
                             ),
                             body: AnalysisResultWidget(
                               result: analyseDetail,
@@ -117,7 +117,7 @@ class AllHistoryScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Analyse du $date',
+                                    'Analysis $date',
                                     style:
                                         theme.textTheme.titleMedium?.copyWith(
                                       fontWeight: FontWeight.w600,

@@ -33,30 +33,30 @@ class MushroomAnalysisResult {
   String get safetyMessage {
     switch (prediction) {
       case 'edible':
-        return 'Ce champignon semble comestible';
+        return 'This mushroom seems safe to eat!';
       case 'conditionally_edible':
-        return 'Ce champignon est comestible sous certaines conditions. Soyez prudent!';
+        return 'This mushroom is conditionally edible, please ensure proper preparation!';
       case 'poisonous':
-        return 'ATTENTION: Ce champignon semble toxique!';
+        return 'Warning: This mushroom is poisonous! Do not consume!';
       case 'deadly':
-        return 'DANGER: Ce champignon semble mortel! Ne pas consommer!';
+        return 'Warning: This mushroom is deadly! Do not consume!';
       default:
-        return 'Classification inconnue';
+        return 'Unknown mushroom type. Proceed with caution!';
     }
   }
 
   String get frenchPrediction {
     switch (prediction) {
       case 'edible':
-        return 'Comestible';
+        return 'Edible';
       case 'conditionally_edible':
-        return 'Conditionnellement comestible';
+        return 'Condionally Edible';
       case 'poisonous':
-        return 'Toxique';
+        return 'Poisonous';
       case 'deadly':
-        return 'Mortel';
+        return 'Deadly';
       default:
-        return 'Inconnu';
+        return 'Unknown';
     }
   }
 }
@@ -87,7 +87,7 @@ class MushroomAIService {
     try {
       // Vérifier si le serveur est disponible
       if (!(await isServerAvailable())) {
-        throw Exception('Le serveur d\'IA n\'est pas disponible. Assurez-vous que l\'API Python est en cours d\'exécution.');
+        throw Exception('The AI server is not available. Please ensure the Python API is running.');
       }
 
      
@@ -118,9 +118,6 @@ class MushroomAIService {
           contentType = MediaType('image', 'jpeg');
         }
         
-        print('Envoi du fichier: $filename avec type MIME: ${contentType.toString()}');
-        print('Taille du fichier: ${bytes.length} bytes');
-        
         request.files.add(http.MultipartFile.fromBytes(
           'file',
           bytes,
@@ -133,8 +130,6 @@ class MushroomAIService {
           'file',
           imagePath,
         );
-        print('Envoi du fichier: ${multipartFile.filename} avec type MIME: ${multipartFile.contentType}');
-        print('Taille du fichier: ${multipartFile.length} bytes');
         
         request.files.add(multipartFile);
       }
@@ -148,11 +143,11 @@ class MushroomAIService {
         return MushroomAnalysisResult.fromJson(jsonData);
       } else {
         final errorData = json.decode(response.body);
-        throw Exception('Erreur du serveur: ${errorData['detail'] ?? 'Erreur inconnue'}');
+        throw Exception('Server error: ${errorData['detail'] ?? 'Unknown error'}');
       }
     } catch (e) {
       if (e.toString().contains('TimeoutException')) {
-        throw Exception('Timeout: L\'analyse de l\'image a pris trop de temps. Veuillez réessayer.');
+        throw Exception('Timeout: The image analysis took too long. Please try again.');
       }
       rethrow;
     }
@@ -162,7 +157,7 @@ class MushroomAIService {
     try {
       // Vérifier si le serveur est disponible
       if (!(await isServerAvailable())) {
-        throw Exception('Le serveur d\'IA n\'est pas disponible. Assurez-vous que l\'API Python est en cours d\'exécution.');
+        throw Exception('The AI server is not available. Please ensure the Python API is running.');
       }      final uri = Uri.parse('$baseUrl/ai/predict/');
       final request = http.MultipartRequest('POST', uri);
       if (_token != null) {
@@ -186,8 +181,6 @@ class MushroomAIService {
         contentType = MediaType('image', 'jpeg');
       }
       
-      print('Envoi du fichier: $filename avec type MIME: ${contentType.toString()}');
-      print('Taille du fichier: ${bytes.length} bytes');
       
       request.files.add(http.MultipartFile.fromBytes(
         'file',
@@ -205,11 +198,11 @@ class MushroomAIService {
         return MushroomAnalysisResult.fromJson(jsonData);
       } else {
         final errorData = json.decode(response.body);
-        throw Exception('Erreur du serveur: ${errorData['detail'] ?? 'Erreur inconnue'}');
+        throw Exception('Server error: ${errorData['detail'] ?? 'Unknown error'}');
       }
     } catch (e) {
       if (e.toString().contains('TimeoutException')) {
-        throw Exception('Timeout: L\'analyse de l\'image a pris trop de temps. Veuillez réessayer.');
+        throw Exception('Timeout: The image analysis took too long. Please try again.');
       }
       rethrow;
     }

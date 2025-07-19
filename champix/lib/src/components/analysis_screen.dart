@@ -55,7 +55,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
-          'Analyse du Champignon',
+          'Analysis Result',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -98,7 +98,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                       ),
                       SizedBox(height: 16),
                       Text(
-                        'Analyse en cours...',
+                        'Analyzing your image...',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
@@ -107,7 +107,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        'Cela peut prendre quelques secondes.',
+                        'Please wait while we process your image.',
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 14,
@@ -150,7 +150,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'Erreur d\'analyse',
+                        'Error Occurred',
                         style: theme.textTheme.titleMedium?.copyWith(
                           color: Colors.redAccent,
                           fontWeight: FontWeight.bold,
@@ -186,7 +186,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                           ),
                         ),
                         child: const Text(
-                          'Réessayer',
+                          'Retry Analysis',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

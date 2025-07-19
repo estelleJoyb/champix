@@ -26,8 +26,8 @@ class ChampignonstoreScaffold extends StatelessWidget {
           if (idx == 2) goRouter.go('/profile');
         },
         destinations:  const [
-          AdaptiveScaffoldDestination(title: 'Champignons', icon: Icons.person),
-          AdaptiveScaffoldDestination(title: 'Identifier', icon: Icons.add_a_photo),
+          AdaptiveScaffoldDestination(title: 'Mushromms', icon: Icons.person),
+          AdaptiveScaffoldDestination(title: 'Scan', icon: Icons.add_a_photo),
           AdaptiveScaffoldDestination(title: 'Profile', icon: Icons.person),
         ],
       ),

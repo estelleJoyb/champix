@@ -86,7 +86,7 @@ class _SignInScreenState extends State<SignInScreen>
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF121212), // Dark background
+      backgroundColor: const Color(0xFF121212),
       body: SafeArea(
         child: Center(
           child: FadeTransition(
@@ -101,7 +101,7 @@ class _SignInScreenState extends State<SignInScreen>
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      const Color(0xFF3E2723).withOpacity(0.15), // Brown secondary
+                      const Color(0xFF3E2723).withOpacity(0.15),
                       Colors.black.withOpacity(0.1),
                     ],
                   ),
@@ -121,7 +121,7 @@ class _SignInScreenState extends State<SignInScreen>
                   children: [
                     // Title
                     Text(
-                      'Connexion',
+                      'Login',
                       style: theme.textTheme.headlineSmall?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -189,7 +189,7 @@ class _SignInScreenState extends State<SignInScreen>
                     TextField(
                       controller: _passwordController,
                       decoration: InputDecoration(
-                        labelText: 'Mot de passe',
+                        labelText: 'Password',
                         labelStyle: TextStyle(color: Colors.white70),
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.05),
@@ -220,7 +220,7 @@ class _SignInScreenState extends State<SignInScreen>
                         shadowColor: Colors.black.withOpacity(0.3),
                       ),
                       child: const Text(
-                        'Se connecter',
+                        'Login',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -233,8 +233,8 @@ class _SignInScreenState extends State<SignInScreen>
                       uri: Uri.parse('/sign-up'),
                       builder: (context, followLink) => TextButton(
                         onPressed: followLink,
-                        child: Text(
-                          'Pas de compte ? Inscrivez-vous',
+                        child: const Text(
+                          "Don't have an account? Sign Up",
                           style: TextStyle(
                             color: Constants.paleGreen,
                             fontSize: 14,

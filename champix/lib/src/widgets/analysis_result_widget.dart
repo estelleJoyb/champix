@@ -292,7 +292,7 @@ class _AnalysisResultWidgetState extends State<AnalysisResultWidget>
                                         width:
                                             10), // Moved Container(width: 10) here as SizedBox
                                     Text(
-                                      'Confiance: ${(widget.result.confidence * 100).toStringAsFixed(1)}%',
+                                      'Confidence: ${(widget.result.confidence * 100).toStringAsFixed(1)}%',
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w600,
@@ -424,9 +424,9 @@ class _AnalysisResultWidgetState extends State<AnalysisResultWidget>
                                           ),
                                         ),
                                         const SizedBox(width: 16),
-                                        Expanded(
+                                        const Expanded(
                                           child: Text(
-                                            'Détails des probabilités',
+                                            'View probabilities details',
                                             style: const TextStyle(
                                               color: Colors.white,
                                               fontSize: 16,
@@ -487,23 +487,23 @@ class _AnalysisResultWidgetState extends State<AnalysisResultWidget>
 
                                             switch (entry.key) {
                                               case 'edible':
-                                                frenchLabel = 'Comestible';
+                                                frenchLabel = 'Edible';
                                                 barColor =
                                                     const Color(0xFF4CAF50);
                                                 break;
                                               case 'conditionally_edible':
                                                 frenchLabel =
-                                                    'Conditionnellement comestible';
+                                                    'Conditionally Edible';
                                                 barColor =
                                                     const Color(0xFFFF9800);
                                                 break;
                                               case 'poisonous':
-                                                frenchLabel = 'Toxique';
+                                                frenchLabel = 'Poisonous';
                                                 barColor =
                                                     const Color(0xFFFF5722);
                                                 break;
                                               case 'deadly':
-                                                frenchLabel = 'Mortel';
+                                                frenchLabel = 'Deadly';
                                                 barColor =
                                                     const Color(0xFFB71C1C);
                                                 break;
@@ -665,7 +665,7 @@ class _AnalysisResultWidgetState extends State<AnalysisResultWidget>
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'Avertissement Important',
+                                            'Important Note',
                                             style: theme.textTheme.titleSmall
                                                     ?.copyWith(
                                                   fontWeight: FontWeight.bold,
@@ -679,7 +679,7 @@ class _AnalysisResultWidgetState extends State<AnalysisResultWidget>
                                           ),
                                           const SizedBox(height: 8),
                                           Text(
-                                            'Cette analyse est basée sur l\'intelligence artificielle et ne doit pas remplacer l\'expertise d\'un mycologue professionnel. Ne jamais consommer un champignon sans être absolument certain de son identification.',
+                                            'This result is based on AI image analysis and may not be 100% accurate. Always consult a local expert before consuming any wild mushrooms.',
                                             style: theme.textTheme.bodySmall
                                                     ?.copyWith(
                                                   color: Colors.amber.shade800,

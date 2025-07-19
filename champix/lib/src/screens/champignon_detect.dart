@@ -44,7 +44,7 @@ class _ChampignonDetectScreenState extends State<ChampignonDetectScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Identifier un Champignon'),
+        title: const Text('Mushroom Detection'),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

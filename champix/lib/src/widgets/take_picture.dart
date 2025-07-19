@@ -102,7 +102,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                     ),
                     const SizedBox(width: 12),
                     const Text(
-                      'Photo capturée',
+                      'Picture taken',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 24,
@@ -169,7 +169,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                                   ),
                                   SizedBox(width: 8),
                                   Text(
-                                    'Reprendre',
+                                    'Retake',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
@@ -226,7 +226,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                                   ),
                                   SizedBox(width: 8),
                                   Text(
-                                    'Analyser',
+                                    'Analyze',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
@@ -301,7 +301,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                   ),
                   const SizedBox(height: 24),
                   const Text(
-                    'Initialisation de la caméra...',
+                    'Initializing camera...',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
@@ -354,7 +354,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
               const SizedBox(height: 32),
               // Titre principal
               const Text(
-                'Caméra non disponible',
+                'Camera Unavailable',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -366,7 +366,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 40),
                 child: const Text(
-                  'Sélectionnez une photo depuis votre galerie pour continuer',
+                  'Please select an image from your gallery to analyze.',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white70,
@@ -411,7 +411,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                             ),
                             SizedBox(width: 12),
                             Text(
-                              'Choisir une photo',
+                              'Select from Gallery',
                               style: TextStyle(
                                 color: Color(0xFF667eea),
                                 fontSize: 18,
@@ -459,7 +459,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'Erreur caméra',
+                              'Camera Error',
                               style: TextStyle(
                                 color: Colors.orange,
                                 fontSize: 14,
@@ -511,7 +511,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                 ),
                 const SizedBox(width: 12),
                 const Text(
-                  'Prendre une photo',
+                  'Take a Picture',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 24,

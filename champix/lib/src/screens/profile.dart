@@ -229,7 +229,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'À propos',
+            'About Me',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -246,14 +246,14 @@ class _ProfileScreenState extends State<ProfileScreen>
               const SizedBox(width: 24),
               _buildStatItem(
                 icon: Icons.restaurant,
-                label: 'Comestibles',
+                label: 'Edibles',
                 value: '$edibleCount',
                 color: const Color(0xFF81C784),
               ),
               const SizedBox(width: 24),
               _buildStatItem(
                 icon: Icons.warning,
-                label: 'Dangereux',
+                label: 'Dangerous',
                 value: '$dangerousCount',
                 color: const Color(0xFFEF5350),
               ),
@@ -305,7 +305,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Historique des analyses',
+              'Analyses History',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -320,7 +320,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                     ),
                   );
                 },
-                child: const Text('Voir tout'),
+                child: const Text('See All',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.w600,
+                    )),
               ),
           ],
         ),
@@ -361,7 +365,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              'Aucune analyse pour le moment',
+              'No analyses yet',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: Theme.of(context)
                         .colorScheme
@@ -371,7 +375,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Commencez par prendre une photo de champignon !',
+              'Start by taking a photo of a mushroom to analyze it.',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context)
                         .colorScheme
@@ -429,7 +433,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       appBar: AppBar(
                         backgroundColor: Theme.of(context).colorScheme.surface,
                         elevation: 0,
-                        title: const Text('Résultat de l’analyse'),
+                        title: const Text('analysis Result'),
                       ),
                       body: AnalysisResultWidget(
                         result: analyseDetail,
@@ -477,7 +481,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Analyse du $date',
+                            'analysis $date',
                             style: Theme.of(context)
                                 .textTheme
                                 .titleMedium
@@ -528,7 +532,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           ChampixAuth.of(context).signOut();
         },
         icon: const Icon(Icons.logout),
-        label: const Text("Se déconnecter"),
+        label: const Text("Disconnect"),
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFFEF5350),
           foregroundColor: Colors.white,
